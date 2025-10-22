@@ -96,16 +96,6 @@ def _import_module(module_path: str, module_name: str):
     return module
 
 
-def sync_inputs(persona: str) -> None:
-    """Sync required inputs from code-netlogo-to-messir/"""
-    module_path = os.path.join(os.path.dirname(__file__), "utils_io.py")
-    input_sync_module = _import_module(module_path, "input_sync")
-    
-    dest_root = os.path.dirname(__file__)
-    input_sync_module.sync_inputs(REPO_ROOT, dest_root, persona)
-    print(f"Synced inputs for persona: {persona}")
-
-
 def run_pipeline(mode: str, persona: str, cases: List[str], execution_id: str) -> dict:
     """Run selected pipeline(s) and return results"""
     # Import orchestrated runner
@@ -119,18 +109,22 @@ def run_pipeline(mode: str, persona: str, cases: List[str], execution_id: str) -
     output_dir = os.path.join(os.path.dirname(__file__), "output", execution_id)
     results = {"mode": mode, "persona": persona, "cases": cases}
     
+    if mode in ["without", "both"]:
+        print("\n" + "="*60)
+        print(f"Running without orchestration at {datetime.now().strftime('%H:%M:%S')}")
+        print("="*60 + "\n")
+        case = cases[0] if cases else "overall"
+        exit_code = single_agent_module.run_without_orchestration_imports(REPO_ROOT, persona, case, None, None, None, output_dir)
+        results["single_agent"] = {"exit_code": exit_code, "case": case}
+    
     if mode in ["with", "both"]:
-        print("Running with orchestration (using imports)...")
+        print("\n" + "="*60)
+        print(f"Running with orchestration at {datetime.now().strftime('%H:%M:%S')}")
+        print("="*60 + "\n")
         # For now, use first case; extend later for multiple cases
         case = cases[0] if cases else "overall"
         exit_code = orchestrated_module.run_with_orchestration_imports(REPO_ROOT, persona, case, None, None, None, output_dir)
         results["orchestrated"] = {"exit_code": exit_code, "case": case}
-    
-    if mode in ["without", "both"]:
-        print("Running without orchestration (using imports)...")
-        case = cases[0] if cases else "overall"
-        exit_code = single_agent_module.run_without_orchestration_imports(REPO_ROOT, persona, case, None, None, None, output_dir)
-        results["single_agent"] = {"exit_code": exit_code, "case": case}
     
     return results
 
@@ -163,8 +157,6 @@ def main() -> int:
     execution_id = compute_execution_id(persona, mode, label)
     print(f"Execution ID: {execution_id}")
     
-    # Sync inputs
-    sync_inputs(persona)
     
     # Run pipeline(s)
     setup = {

@@ -102,49 +102,6 @@ def test_single_agent_imports():
         return False
 
 
-def test_input_sync():
-    """Test the input synchronization"""
-    print("Testing input synchronization...")
-    
-    try:
-        import importlib.util
-        import sys
-        
-        # Import the module directly like in main.py
-        module_path = os.path.join(os.path.dirname(__file__), "utils_io.py")
-        spec = importlib.util.spec_from_file_location("input_sync", module_path)
-        input_sync_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(input_sync_module)
-        sync_inputs = input_sync_module.sync_inputs
-        
-        # Create temporary directories
-        with tempfile.TemporaryDirectory() as temp_dir:
-            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-            dest_root = temp_dir
-            persona = "persona-v1"
-            
-            print(f"Testing input sync with:")
-            print(f"  Repo root: {repo_root}")
-            print(f"  Dest root: {dest_root}")
-            print(f"  Persona: {persona}")
-            
-            # Run the sync
-            sync_inputs(repo_root, dest_root, persona)
-            
-            # Check if input directories were created
-            input_dir = os.path.join(dest_root, "input")
-            if os.path.exists(input_dir):
-                print("Input sync completed successfully")
-                return True
-            else:
-                print("Input sync failed - no input directory created")
-                return False
-                
-    except Exception as e:
-        print(f"Error testing input sync: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
 
 
 def main():
@@ -154,7 +111,6 @@ def main():
     print()
     
     tests = [
-        ("Input Sync", test_input_sync),
         ("Orchestrated Imports", test_orchestrated_imports),
         ("Single Agent Imports", test_single_agent_imports),
     ]
