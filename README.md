@@ -5,15 +5,13 @@ This project provides a unified interface for running both orchestrated and sing
 ## Structure
 
 - `main.py` - Main entry point for the experimentation runner
-- `src/` - Source code modules
-  - `runner/` - Pipeline runners
-    - `orchestrated.py` - Orchestrated pipeline runner
-    - `single_agent.py` - Single agent pipeline runner
-  - `io/` - Input/output utilities
-    - `input_sync.py` - Input synchronization utilities
-  - `utils.py` - Common utilities
-- `src/results/` - Results management utilities
-  - `writer.py` - Results writer (writes to output/ directory)
+- `runner_orchestrated.py` - Orchestrated pipeline runner
+- `runner_single_agent.py` - Single agent pipeline runner
+- `utils_io.py` - Input synchronization utilities
+- `results_writer.py` - Results writer (writes to output/ directory)
+- `utils.py` - Common utilities
+- `test_import_runner.py` - Test script for import runners
+- `performance_test_final.py` - Performance comparison script
 - `input/` - Synchronized input files
 - `output/` - Experiment output files
 - `templates/` - Report templates

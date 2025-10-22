@@ -29,13 +29,24 @@ def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode:
                 shutil.copy2(source_file, target_file)
                 print(f"Copied: {rel_path} -> {target_file}")
 
+def _dir_contains_dummy(dir_path: str) -> bool:
+    marker = "Dummy"
+    for root, _, files in os.walk(dir_path):
+        for file in files:
+            try:
+                with open(os.path.join(root, file), "r", encoding="utf-8", errors="ignore") as f:
+                    if marker in f.read(512):
+                        return True
+            except Exception:
+                continue
+    return False
+
 def _find_latest_run_dir_orchestrated(repo_root: str) -> Optional[str]:
-    """Find the latest orchestrated run directory under code-netlogo-to-messir/output/runs/*."""
+    """Find the latest orchestrated run directory under code-netlogo-to-messir/output/runs/* that is not dummy."""
     runs_root = os.path.join(repo_root, "code-netlogo-to-messir", "output", "runs")
     if not os.path.isdir(runs_root):
         return None
-    latest_dir = None
-    latest_mtime = -1.0
+    candidates = []
     for date_dir in os.listdir(runs_root):
         date_path = os.path.join(runs_root, date_dir)
         if not os.path.isdir(date_path):
@@ -46,10 +57,13 @@ def _find_latest_run_dir_orchestrated(repo_root: str) -> Optional[str]:
                 mtime = os.path.getmtime(combo_path)
             except OSError:
                 continue
-            if mtime > latest_mtime:
-                latest_mtime = mtime
-                latest_dir = combo_path
-    return latest_dir
+            candidates.append((mtime, combo_path))
+    # sort newest first and pick the first non-dummy
+    for _, path in sorted(candidates, key=lambda x: x[0], reverse=True):
+        if not _dir_contains_dummy(path):
+            return path
+    # fallback: return newest even if dummy
+    return candidates and sorted(candidates, key=lambda x: x[0], reverse=True)[0][1] or None
 
 def _guard_no_dummy_outputs(target_mode_dir: str) -> None:
     """Raise RuntimeError if any file under target_mode_dir contains known dummy markers."""
@@ -91,52 +105,26 @@ def run_with_orchestration_imports(repo_root: str, persona: str, case: Optional[
         print(f"Using reasoning: {reasoning or 'medium'}")
         print(f"Using verbosity: {verbosity or 'low'}")
         
-        # Prefer direct import of orchestrator if available
-        try:
-            sys.path.append(os.path.join(repo_root, "code-netlogo-to-messir"))
-            from orchestrator import NetLogoOrchestrator  # type: ignore
-            from utils_config_constants import DEFAULT_MODEL  # type: ignore
-            model_name = model or DEFAULT_MODEL
-            orchestrator = NetLogoOrchestrator(model_name=model_name)
-            orchestrator.update_agent_configs(
-                reasoning_effort=reasoning or "medium",
-                reasoning_summary="auto",
-                text_verbosity=verbosity or "low",
-                persona_set=persona,
-            )
-            base_name = (case or "overall")
-            # Run orchestrator and let it write into its own output/runs structure
-            # Many orchestrator methods are async; if so, fall back to subprocess runner
-            try:
-                run_result = orchestrator.run(base_name)  # may be coroutine in some versions
-                if hasattr(run_result, "__await__"):
-                    # Cannot await here synchronously; fall back to subprocess path
-                    raise TypeError("Async orchestrator.run detected")
-            except Exception:
-                # Delegate to subprocess variant
-                rc = run_with_orchestration(repo_root, persona, case, model, reasoning, verbosity, output_dir)
-                if rc != 0:
-                    return rc
-            # If direct import path above succeeded, small delay to ensure files flushed
-            time.sleep(0.2)
-        except Exception:
-            # If any import-based path fails, delegate to subprocess
-            rc = run_with_orchestration(repo_root, persona, case, model, reasoning, verbosity, output_dir)
-            if rc != 0:
-                return rc
+        # Always use subprocess variant for consistency and proper error handling
+        rc = run_with_orchestration(repo_root, persona, case, model, reasoning, verbosity, output_dir)
+        
+        # Only copy outputs if the pipeline actually succeeded
+        if rc == 0:
+            # Locate latest orchestrator run outputs and copy them under experimentation
+            latest_dir = _find_latest_run_dir_orchestrated(repo_root)
+            if not latest_dir:
+                raise RuntimeError("Could not locate orchestrator output directory")
+            copy_output_files_to_experimentation(latest_dir, output_dir, "orchestrated")
 
-        # Locate latest orchestrator run outputs and copy them under experimentation
-        latest_dir = _find_latest_run_dir_orchestrated(repo_root)
-        if not latest_dir:
-            raise RuntimeError("Could not locate orchestrator output directory")
-        copy_output_files_to_experimentation(latest_dir, output_dir, "orchestrated")
+            # Guard: ensure no dummy artifacts landed in experimentation folder
+            target_mode_dir = os.path.join(output_dir, "orchestrated_output")
+            _guard_no_dummy_outputs(target_mode_dir)
 
-        # Guard: ensure no dummy artifacts landed in experimentation folder
-        target_mode_dir = os.path.join(output_dir, "orchestrated_output")
-        _guard_no_dummy_outputs(target_mode_dir)
-
-        print("Orchestrated pipeline completed successfully")
-        return 0
+            print("Orchestrated pipeline completed successfully")
+            return 0
+        else:
+            print(f"Orchestrated pipeline failed with exit code: {rc}")
+            return rc
         
     except ValueError as e:
         print(f"Validation error in orchestrated import runner: {e}")
@@ -177,6 +165,29 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
             cmd.extend(["--persona", persona])
     
     env = os.environ.copy()
+    # Sanitize OPENAI_API_KEY if it was exported/copied with shell syntax
+    try:
+        raw_key = env.get("OPENAI_API_KEY")
+        if raw_key:
+            key = raw_key.strip()
+            # Remove leading export statements
+            if key.lower().startswith("export "):
+                key = key[len("export "):].strip()
+            # If provided as KEY=VALUE, split and take the value part
+            if "=" in key:
+                parts = key.split("=", 1)
+                # If the left side looks like the key name, use right side
+                if parts[0].strip().upper() in {"OPENAI_API_KEY", "API_KEY", "KEY"}:
+                    key = parts[1].strip()
+            # Strip surrounding quotes
+            if (key.startswith('"') and key.endswith('"')) or (key.startswith("'") and key.endswith("'")):
+                key = key[1:-1].strip()
+            # Final cleanup of stray characters like trailing parentheses or semicolons
+            key = key.strip().strip(";")
+            env["OPENAI_API_KEY"] = key
+    except Exception:
+        # Do not fail on sanitization; proceed with original env
+        pass
     os.makedirs(output_dir, exist_ok=True)
     
     log_file = os.path.join(output_dir, "with_orchestration.log")

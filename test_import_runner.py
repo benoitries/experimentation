@@ -10,15 +10,15 @@ import tempfile
 import shutil
 from datetime import datetime
 
-# Add the parent directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# No longer needed - files are now in the same directory
 
 def test_orchestrated_imports():
     """Test the orchestrated import runner"""
     print("Testing orchestrated import runner...")
     
     try:
-        from src.runner.orchestrated import run_with_orchestration_imports
+        import runner_orchestrated
+        run_with_orchestration_imports = runner_orchestrated.run_with_orchestration_imports
         
         # Create temporary output directory
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -62,7 +62,8 @@ def test_single_agent_imports():
     print("Testing single agent import runner...")
     
     try:
-        from src.runner.single_agent import run_without_orchestration_imports
+        import runner_single_agent
+        run_without_orchestration_imports = runner_single_agent.run_without_orchestration_imports
         
         # Create temporary output directory
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -110,7 +111,7 @@ def test_input_sync():
         import sys
         
         # Import the module directly like in main.py
-        module_path = os.path.join(os.path.dirname(__file__), "io", "input_sync.py")
+        module_path = os.path.join(os.path.dirname(__file__), "utils_io.py")
         spec = importlib.util.spec_from_file_location("input_sync", module_path)
         input_sync_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(input_sync_module)

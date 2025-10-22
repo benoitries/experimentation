@@ -11,12 +11,11 @@ import tempfile
 import shutil
 from typing import Dict
 
-# Add experimentation directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+# No longer needed - files are now in the same directory
 
 # Import the runner modules using absolute paths
-orchestrated_path = os.path.join(os.path.dirname(__file__), "runner", "orchestrated.py")
-single_agent_path = os.path.join(os.path.dirname(__file__), "runner", "single_agent.py")
+orchestrated_path = os.path.join(os.path.dirname(__file__), "runner_orchestrated.py")
+single_agent_path = os.path.join(os.path.dirname(__file__), "runner_single_agent.py")
 
 import importlib.util
 

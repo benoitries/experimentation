@@ -13,7 +13,7 @@ def print_banner() -> None:
 
 
 def ensure_dirs() -> None:
-    for rel in ("output", "templates", "runner", "input"):
+    for rel in ("output", "templates", "input"):
         os.makedirs(os.path.join(os.path.dirname(__file__), rel), exist_ok=True)
 
 
@@ -98,7 +98,7 @@ def _import_module(module_path: str, module_name: str):
 
 def sync_inputs(persona: str) -> None:
     """Sync required inputs from code-netlogo-to-messir/"""
-    module_path = os.path.join(os.path.dirname(__file__), "src", "io", "input_sync.py")
+    module_path = os.path.join(os.path.dirname(__file__), "utils_io.py")
     input_sync_module = _import_module(module_path, "input_sync")
     
     dest_root = os.path.dirname(__file__)
@@ -109,11 +109,11 @@ def sync_inputs(persona: str) -> None:
 def run_pipeline(mode: str, persona: str, cases: List[str], execution_id: str) -> dict:
     """Run selected pipeline(s) and return results"""
     # Import orchestrated runner
-    orchestrated_path = os.path.join(os.path.dirname(__file__), "src", "runner", "orchestrated.py")
+    orchestrated_path = os.path.join(os.path.dirname(__file__), "runner_orchestrated.py")
     orchestrated_module = _import_module(orchestrated_path, "orchestrated")
     
     # Import single agent runner
-    single_agent_path = os.path.join(os.path.dirname(__file__), "src", "runner", "single_agent.py")
+    single_agent_path = os.path.join(os.path.dirname(__file__), "runner_single_agent.py")
     single_agent_module = _import_module(single_agent_path, "single_agent")
     
     output_dir = os.path.join(os.path.dirname(__file__), "output", execution_id)
@@ -141,7 +141,7 @@ def generate_report(execution_id: str, setup: dict, results: dict) -> str:
     import importlib.util
     
     # Import results writer
-    writer_path = os.path.join(os.path.dirname(__file__), "src", "results", "writer.py")
+    writer_path = os.path.join(os.path.dirname(__file__), "results_writer.py")
     spec = importlib.util.spec_from_file_location("writer", writer_path)
     writer_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(writer_module)

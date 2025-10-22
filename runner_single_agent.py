@@ -29,13 +29,24 @@ def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode:
                 shutil.copy2(source_file, target_file)
                 print(f"Copied: {rel_path} -> {target_file}")
 
+def _dir_contains_dummy(dir_path: str) -> bool:
+    marker = "Dummy"
+    for root, _, files in os.walk(dir_path):
+        for file in files:
+            try:
+                with open(os.path.join(root, file), "r", encoding="utf-8", errors="ignore") as f:
+                    if marker in f.read(512):
+                        return True
+            except Exception:
+                continue
+    return False
+
 def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
-    """Find the latest single-agent run directory under code-nl2-messir-without-orchestration/output/*."""
+    """Find the latest single-agent run directory under code-nl2-messir-without-orchestration/output/* that is not dummy."""
     runs_root = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "output")
     if not os.path.isdir(runs_root):
         return None
-    latest_dir = None
-    latest_mtime = -1.0
+    candidates = []
     for name in os.listdir(runs_root):
         path = os.path.join(runs_root, name)
         if not os.path.isdir(path):
@@ -44,10 +55,11 @@ def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
             mtime = os.path.getmtime(path)
         except OSError:
             continue
-        if mtime > latest_mtime:
-            latest_mtime = mtime
-            latest_dir = path
-    return latest_dir
+        candidates.append((mtime, path))
+    for _, path in sorted(candidates, key=lambda x: x[0], reverse=True):
+        if not _dir_contains_dummy(path):
+            return path
+    return candidates and sorted(candidates, key=lambda x: x[0], reverse=True)[0][1] or None
 
 def _guard_no_dummy_outputs(target_mode_dir: str) -> None:
     marker = "Dummy"
@@ -85,27 +97,12 @@ def run_without_orchestration_imports(repo_root: str, persona: str, case: Option
         print(f"Using reasoning: {reasoning or 'medium'}")
         print(f"Using verbosity: {verbosity or 'low'}")
         
-        # Try import-based execution of the single agent runner
-        try:
-            sys.path.append(os.path.join(repo_root, "code-nl2-messir-without-orchestration"))
-            import agent_netlogo_to_lucim as single_agent_runner  # type: ignore
-            # Prefer calling its main-like entry; if unavailable, fall back to subprocess
-            if hasattr(single_agent_runner, "main"):
-                # Emulate minimal CLI parameterization if supported
-                try:
-                    single_agent_runner.main()
-                except TypeError:
-                    # If main() requires CLI parsing, fallback to subprocess
-                    raise ImportError("main() signature incompatible")
-            else:
-                raise ImportError("No importable main() in single agent runner")
-            time.sleep(0.2)
-        except Exception:
-            # Delegate to subprocess variant which already executes the real flow
-            rc = run_without_orchestration(repo_root, persona, case, model, reasoning, verbosity, output_dir)
-            if rc != 0:
-                return rc
+        # Force subprocess variant (stable path)
+        rc = run_without_orchestration(repo_root, persona, case, model, reasoning, verbosity, output_dir)
+        if rc != 0:
+            return rc
 
+        # Only copy outputs if the pipeline actually succeeded
         # Locate latest single-agent outputs and copy to experimentation folder
         latest_dir = _find_latest_run_dir_single_agent(repo_root)
         if not latest_dir:
