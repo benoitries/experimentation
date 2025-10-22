@@ -26,7 +26,7 @@ def test_orchestrated_imports():
             os.makedirs(output_dir, exist_ok=True)
             
             # Test parameters
-            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
             persona = "persona-v1"
             case = "overall"
             
@@ -71,7 +71,7 @@ def test_single_agent_imports():
             os.makedirs(output_dir, exist_ok=True)
             
             # Test parameters
-            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
             persona = "persona-v1"
             case = "overall"
             

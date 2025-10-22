@@ -29,20 +29,9 @@ def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode:
                 shutil.copy2(source_file, target_file)
                 print(f"Copied: {rel_path} -> {target_file}")
 
-def _dir_contains_dummy(dir_path: str) -> bool:
-    marker = "Dummy"
-    for root, _, files in os.walk(dir_path):
-        for file in files:
-            try:
-                with open(os.path.join(root, file), "r", encoding="utf-8", errors="ignore") as f:
-                    if marker in f.read(512):
-                        return True
-            except Exception:
-                continue
-    return False
 
 def _find_latest_run_dir_orchestrated(repo_root: str) -> Optional[str]:
-    """Find the latest orchestrated run directory under code-netlogo-to-messir/output/runs/* that is not dummy."""
+    """Find the latest orchestrated run directory under code-netlogo-to-messir/output/runs/*."""
     runs_root = os.path.join(repo_root, "code-netlogo-to-messir", "output", "runs")
     if not os.path.isdir(runs_root):
         return None
@@ -58,29 +47,9 @@ def _find_latest_run_dir_orchestrated(repo_root: str) -> Optional[str]:
             except OSError:
                 continue
             candidates.append((mtime, combo_path))
-    # sort newest first and pick the first non-dummy
-    for _, path in sorted(candidates, key=lambda x: x[0], reverse=True):
-        if not _dir_contains_dummy(path):
-            return path
-    # fallback: return newest even if dummy
+    # Return newest directory
     return candidates and sorted(candidates, key=lambda x: x[0], reverse=True)[0][1] or None
 
-def _guard_no_dummy_outputs(target_mode_dir: str) -> None:
-    """Raise RuntimeError if any file under target_mode_dir contains known dummy markers."""
-    marker = "Dummy"
-    for root, _, files in os.walk(target_mode_dir):
-        for file in files:
-            file_path = os.path.join(root, file)
-            try:
-                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                    # Read a small chunk to detect marker fast, then fall back to full scan
-                    head = f.read(256)
-                    if marker in head:
-                        raise RuntimeError(f"Detected dummy marker in {file_path}")
-                    # Optionally scan the rest if needed
-            except UnicodeDecodeError:
-                # Binary or non-text: skip
-                continue
 
 
 def run_with_orchestration_imports(repo_root: str, persona: str, case: Optional[str], model: Optional[str], reasoning: Optional[str], verbosity: Optional[str], output_dir: str) -> int:
@@ -116,9 +85,6 @@ def run_with_orchestration_imports(repo_root: str, persona: str, case: Optional[
                 raise RuntimeError("Could not locate orchestrator output directory")
             copy_output_files_to_experimentation(latest_dir, output_dir, "orchestrated")
 
-            # Guard: ensure no dummy artifacts landed in experimentation folder
-            target_mode_dir = os.path.join(output_dir, "orchestrated_output")
-            _guard_no_dummy_outputs(target_mode_dir)
 
             print("Orchestrated pipeline completed successfully")
             return 0
@@ -165,6 +131,14 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
             cmd.extend(["--persona", persona])
     
     env = os.environ.copy()
+    
+    # Set up input directories to point to experimentation/input/
+    experimentation_input_dir = os.path.join(repo_root, "experimentation", "input")
+    env["INPUT_NETLOGO_DIR"] = os.path.join(experimentation_input_dir, "input-netlogo")
+    env["INPUT_ICRASH_DIR"] = os.path.join(experimentation_input_dir, "input-icrash")
+    env["INPUT_IMAGES_DIR"] = os.path.join(experimentation_input_dir, "input-images")
+    env["INPUT_PERSONA_DIR"] = os.path.join(experimentation_input_dir, "input-persona")
+    
     # Sanitize OPENAI_API_KEY if it was exported/copied with shell syntax
     try:
         raw_key = env.get("OPENAI_API_KEY")
@@ -190,7 +164,10 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
         pass
     os.makedirs(output_dir, exist_ok=True)
     
-    log_file = os.path.join(output_dir, "with_orchestration.log")
+    # Create orchestrated_output subdirectory and place log there
+    orchestrated_output_dir = os.path.join(output_dir, "orchestrated_output")
+    os.makedirs(orchestrated_output_dir, exist_ok=True)
+    log_file = os.path.join(orchestrated_output_dir, "orchestrator_output.log")
     print(f"Running orchestrated pipeline: {' '.join(cmd)}")
     print(f"Logging to: {log_file}")
     

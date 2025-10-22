@@ -7,7 +7,6 @@ This project provides a unified interface for running both orchestrated and sing
 - `main.py` - Main entry point for the experimentation runner
 - `runner_orchestrated.py` - Orchestrated pipeline runner
 - `runner_single_agent.py` - Single agent pipeline runner
-- `utils_io.py` - Input synchronization utilities
 - `results_writer.py` - Results writer (writes to output/ directory)
 - `utils.py` - Common utilities
 - `test_import_runner.py` - Test script for import runners
@@ -58,7 +57,9 @@ output/
   YYYY-MM-DD/
     HHMM-persona-mode-label/
       orchestrated_output/  # If orchestrated mode
+        orchestrator_output.log  # Orchestrated pipeline execution log
       single_agent_output/  # If single agent mode
+        single_agent_output.log  # Single agent pipeline execution log
 ```
 
 ## Results

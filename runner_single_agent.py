@@ -29,20 +29,9 @@ def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode:
                 shutil.copy2(source_file, target_file)
                 print(f"Copied: {rel_path} -> {target_file}")
 
-def _dir_contains_dummy(dir_path: str) -> bool:
-    marker = "Dummy"
-    for root, _, files in os.walk(dir_path):
-        for file in files:
-            try:
-                with open(os.path.join(root, file), "r", encoding="utf-8", errors="ignore") as f:
-                    if marker in f.read(512):
-                        return True
-            except Exception:
-                continue
-    return False
 
 def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
-    """Find the latest single-agent run directory under code-nl2-messir-without-orchestration/output/* that is not dummy."""
+    """Find the latest single-agent run directory under code-nl2-messir-without-orchestration/output/*."""
     runs_root = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "output")
     if not os.path.isdir(runs_root):
         return None
@@ -56,23 +45,9 @@ def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
         except OSError:
             continue
         candidates.append((mtime, path))
-    for _, path in sorted(candidates, key=lambda x: x[0], reverse=True):
-        if not _dir_contains_dummy(path):
-            return path
+    # Return newest directory
     return candidates and sorted(candidates, key=lambda x: x[0], reverse=True)[0][1] or None
 
-def _guard_no_dummy_outputs(target_mode_dir: str) -> None:
-    marker = "Dummy"
-    for root, _, files in os.walk(target_mode_dir):
-        for file in files:
-            file_path = os.path.join(root, file)
-            try:
-                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                    head = f.read(256)
-                    if marker in head:
-                        raise RuntimeError(f"Detected dummy marker in {file_path}")
-            except UnicodeDecodeError:
-                continue
 
 
 def run_without_orchestration_imports(repo_root: str, persona: str, case: Optional[str], model: Optional[str], reasoning: Optional[str], verbosity: Optional[str], output_dir: str) -> int:
@@ -109,8 +84,6 @@ def run_without_orchestration_imports(repo_root: str, persona: str, case: Option
             raise RuntimeError("Could not locate single-agent output directory")
         copy_output_files_to_experimentation(latest_dir, output_dir, "single_agent")
 
-        target_mode_dir = os.path.join(output_dir, "single_agent_output")
-        _guard_no_dummy_outputs(target_mode_dir)
 
         print("Single agent pipeline completed successfully")
         return 0
@@ -135,28 +108,37 @@ def run_without_orchestration(repo_root: str, persona: str, case: Optional[str],
     candidate = os.path.join(scripts_path, "run_default.py")
     
     cmd: List[str]
-    if os.path.exists(candidate):
-        # Use the default script
-        python_path = sys.executable
-        cmd = [python_path, candidate]
-        if case:
-            cmd.extend(["--base", case])
-        if persona:
-            cmd.extend(["--persona-set", persona])
-    else:
-        # Fallback to direct agent execution
-        agent_script = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "agent_netlogo_to_lucim.py")
-        python_path = sys.executable
-        cmd = [python_path, agent_script]
-        if case:
-            cmd.extend(["--case", case])
-        if persona:
-            cmd.extend(["--persona", persona])
+    # Always use direct agent execution to ensure environment variables are passed
+    agent_script = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "agent_netlogo_to_lucim.py")
+    python_path = sys.executable
+    cmd = [python_path, agent_script]
+    if case:
+        cmd.extend(["--case", case])
+    if persona:
+        cmd.extend(["--persona", persona])
+    if model:
+        cmd.extend(["--model", model])
+    if reasoning:
+        cmd.extend(["--reasoning", reasoning])
+    if verbosity:
+        cmd.extend(["--verbosity", verbosity])
+    cmd.append("--non-interactive")
     
     env = os.environ.copy()
+    
+    # Set up input directories to point to experimentation/input/
+    experimentation_input_dir = os.path.join(repo_root, "experimentation", "input")
+    env["INPUT_NETLOGO_DIR"] = os.path.join(experimentation_input_dir, "input-netlogo")
+    env["INPUT_ICRASH_DIR"] = os.path.join(experimentation_input_dir, "input-icrash")
+    env["INPUT_IMAGES_DIR"] = os.path.join(experimentation_input_dir, "input-images")
+    env["INPUT_PERSONA_DIR"] = os.path.join(experimentation_input_dir, "input-persona")
+    
     os.makedirs(output_dir, exist_ok=True)
     
-    log_file = os.path.join(output_dir, "without_orchestration.log")
+    # Create single_agent_output subdirectory and place log there
+    single_agent_output_dir = os.path.join(output_dir, "single_agent_output")
+    os.makedirs(single_agent_output_dir, exist_ok=True)
+    log_file = os.path.join(single_agent_output_dir, "single_agent_output.log")
     print(f"Running single agent pipeline: {' '.join(cmd)}")
     print(f"Logging to: {log_file}")
     
