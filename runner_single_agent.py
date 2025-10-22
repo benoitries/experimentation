@@ -5,12 +5,17 @@ from typing import Optional, List
 import time
 
 # Import utils functions directly since we're using dynamic imports
-def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode: str) -> None:
+def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode: str, case: str = None, model: str = None, reasoning: str = None, verbosity: str = None) -> None:
     """Copy all generated output files from orchestration/single-agent to experimentation output folder."""
     import shutil
     
-    # Create target subdirectory for this mode
-    mode_dir = os.path.join(target_dir, f"{mode}_output")
+    # Create target subdirectory for this mode with parameter-specific naming
+    # Order: case study model name, ai model name, reasoning, verbosity level
+    if case and model and reasoning and verbosity:
+        param_dir = f"{case}-{model}-reason-{reasoning}-verb-{verbosity}"
+        mode_dir = os.path.join(target_dir, f"{mode}_output", param_dir)
+    else:
+        mode_dir = os.path.join(target_dir, f"{mode}_output")
     os.makedirs(mode_dir, exist_ok=True)
     
     # Copy all files from source to target
@@ -82,7 +87,7 @@ def run_without_orchestration_imports(repo_root: str, persona: str, case: Option
         latest_dir = _find_latest_run_dir_single_agent(repo_root)
         if not latest_dir:
             raise RuntimeError("Could not locate single-agent output directory")
-        copy_output_files_to_experimentation(latest_dir, output_dir, "single_agent")
+        copy_output_files_to_experimentation(latest_dir, output_dir, "single_agent", case, model, reasoning, verbosity)
 
 
         print("Single agent pipeline completed successfully")

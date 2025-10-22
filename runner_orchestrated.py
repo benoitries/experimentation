@@ -120,6 +120,10 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
             cmd.extend(["--base", case])
         if persona:
             cmd.extend(["--persona-set", persona])
+        if reasoning:
+            cmd.extend(["--reasoning", reasoning])
+        if verbosity:
+            cmd.extend(["--verbosity", verbosity])
     else:
         # Fallback to orchestrator.py
         orchestrator = os.path.join(repo_root, "code-netlogo-to-messir", "orchestrator.py")
@@ -129,6 +133,12 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
             cmd.extend(["--case", case])
         if persona:
             cmd.extend(["--persona", persona])
+        if model:
+            cmd.extend(["--model", model])
+        if reasoning:
+            cmd.extend(["--reasoning", reasoning])
+        if verbosity:
+            cmd.extend(["--verbosity", verbosity])
     
     env = os.environ.copy()
     
