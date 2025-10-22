@@ -1,0 +1,15 @@
+{
+  "mode": "both",
+  "persona": "persona-v1",
+  "cases": [
+    "3d-solids"
+  ],
+  "orchestrated": {
+    "exit_code": 0,
+    "case": "3d-solids"
+  },
+  "single_agent": {
+    "exit_code": 0,
+    "case": "3d-solids"
+  }
+}
