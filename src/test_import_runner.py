@@ -10,8 +10,8 @@ import tempfile
 import shutil
 from datetime import datetime
 
-# Add the current directory to Python path
-sys.path.insert(0, os.path.dirname(__file__))
+# Add the parent directory to Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 def test_orchestrated_imports():
     """Test the orchestrated import runner"""
@@ -26,7 +26,7 @@ def test_orchestrated_imports():
             os.makedirs(output_dir, exist_ok=True)
             
             # Test parameters
-            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
             persona = "persona-v1"
             case = "overall"
             
@@ -70,7 +70,7 @@ def test_single_agent_imports():
             os.makedirs(output_dir, exist_ok=True)
             
             # Test parameters
-            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
             persona = "persona-v1"
             case = "overall"
             
@@ -110,7 +110,7 @@ def test_input_sync():
         import sys
         
         # Import the module directly like in main.py
-        module_path = os.path.join(os.path.dirname(__file__), "src", "io", "input_sync.py")
+        module_path = os.path.join(os.path.dirname(__file__), "io", "input_sync.py")
         spec = importlib.util.spec_from_file_location("input_sync", module_path)
         input_sync_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(input_sync_module)
@@ -118,7 +118,7 @@ def test_input_sync():
         
         # Create temporary directories
         with tempfile.TemporaryDirectory() as temp_dir:
-            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
             dest_root = temp_dir
             persona = "persona-v1"
             

@@ -2,13 +2,71 @@ import os
 import sys
 import subprocess
 from typing import Optional, List
-from ..utils import copy_output_files_to_experimentation, create_dummy_output_files
+import time
+
+# Import utils functions directly since we're using dynamic imports
+def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode: str) -> None:
+    """Copy all generated output files from orchestration/single-agent to experimentation output folder."""
+    import shutil
+    
+    # Create target subdirectory for this mode
+    mode_dir = os.path.join(target_dir, f"{mode}_output")
+    os.makedirs(mode_dir, exist_ok=True)
+    
+    # Copy all files from source to target
+    if os.path.exists(source_dir):
+        for root, dirs, files in os.walk(source_dir):
+            for file in files:
+                source_file = os.path.join(root, file)
+                # Calculate relative path to maintain structure
+                rel_path = os.path.relpath(source_file, source_dir)
+                target_file = os.path.join(mode_dir, rel_path)
+                
+                # Create target directory if needed
+                os.makedirs(os.path.dirname(target_file), exist_ok=True)
+                
+                # Copy file
+                shutil.copy2(source_file, target_file)
+                print(f"Copied: {rel_path} -> {target_file}")
+
+def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
+    """Find the latest single-agent run directory under code-nl2-messir-without-orchestration/output/*."""
+    runs_root = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "output")
+    if not os.path.isdir(runs_root):
+        return None
+    latest_dir = None
+    latest_mtime = -1.0
+    for name in os.listdir(runs_root):
+        path = os.path.join(runs_root, name)
+        if not os.path.isdir(path):
+            continue
+        try:
+            mtime = os.path.getmtime(path)
+        except OSError:
+            continue
+        if mtime > latest_mtime:
+            latest_mtime = mtime
+            latest_dir = path
+    return latest_dir
+
+def _guard_no_dummy_outputs(target_mode_dir: str) -> None:
+    marker = "Dummy"
+    for root, _, files in os.walk(target_mode_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            try:
+                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                    head = f.read(256)
+                    if marker in head:
+                        raise RuntimeError(f"Detected dummy marker in {file_path}")
+            except UnicodeDecodeError:
+                continue
 
 
 def run_without_orchestration_imports(repo_root: str, persona: str, case: Optional[str], model: Optional[str], reasoning: Optional[str], verbosity: Optional[str], output_dir: str) -> int:
     """
     Run single agent pipeline using direct imports instead of subprocess.
-    For now, this is a simplified implementation that simulates the single agent process.
+    Execute the real single agent pipeline via import if possible; otherwise delegate to subprocess.
     """
     try:
         # Validate input parameters
@@ -27,36 +85,37 @@ def run_without_orchestration_imports(repo_root: str, persona: str, case: Option
         print(f"Using reasoning: {reasoning or 'medium'}")
         print(f"Using verbosity: {verbosity or 'low'}")
         
-        # For now, we'll simulate the single agent process
-        # In a real implementation, we would:
-        # 1. Import the single agent modules properly
-        # 2. Set up the environment correctly
-        # 3. Run the actual single agent pipeline
-        
-        # Create output directory for this run
-        from datetime import datetime
-        run_name = datetime.now().strftime("%Y%m%d_%H%M%S")
-        run_output_dir = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "output", "runs", datetime.now().strftime("%Y-%m-%d"), run_name)
-        
+        # Try import-based execution of the single agent runner
         try:
-            os.makedirs(run_output_dir, exist_ok=True)
-        except OSError as e:
-            raise RuntimeError(f"Failed to create output directory {run_output_dir}: {e}")
-        
-        # Create some dummy output files to simulate the process
-        try:
-            create_dummy_output_files(run_output_dir, case, persona, "single_agent")
-        except RuntimeError as e:
-            raise RuntimeError(f"Failed to create dummy files: {e}")
-        
-        # Copy output files to experimentation folder
-        try:
-            copy_output_files_to_experimentation(run_output_dir, output_dir, "single_agent")
-        except Exception as e:
-            print(f"Warning: Failed to copy output files: {e}")
-            # Don't fail the entire process for copy errors
-        
-        print("Single agent pipeline completed successfully (simulated)")
+            sys.path.append(os.path.join(repo_root, "code-nl2-messir-without-orchestration"))
+            import agent_netlogo_to_lucim as single_agent_runner  # type: ignore
+            # Prefer calling its main-like entry; if unavailable, fall back to subprocess
+            if hasattr(single_agent_runner, "main"):
+                # Emulate minimal CLI parameterization if supported
+                try:
+                    single_agent_runner.main()
+                except TypeError:
+                    # If main() requires CLI parsing, fallback to subprocess
+                    raise ImportError("main() signature incompatible")
+            else:
+                raise ImportError("No importable main() in single agent runner")
+            time.sleep(0.2)
+        except Exception:
+            # Delegate to subprocess variant which already executes the real flow
+            rc = run_without_orchestration(repo_root, persona, case, model, reasoning, verbosity, output_dir)
+            if rc != 0:
+                return rc
+
+        # Locate latest single-agent outputs and copy to experimentation folder
+        latest_dir = _find_latest_run_dir_single_agent(repo_root)
+        if not latest_dir:
+            raise RuntimeError("Could not locate single-agent output directory")
+        copy_output_files_to_experimentation(latest_dir, output_dir, "single_agent")
+
+        target_mode_dir = os.path.join(output_dir, "single_agent_output")
+        _guard_no_dummy_outputs(target_mode_dir)
+
+        print("Single agent pipeline completed successfully")
         return 0
         
     except ValueError as e:

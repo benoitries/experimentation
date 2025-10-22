@@ -141,7 +141,7 @@ def generate_report(execution_id: str, setup: dict, results: dict) -> str:
     import importlib.util
     
     # Import results writer
-    writer_path = os.path.join(os.path.dirname(__file__), "results", "writer.py")
+    writer_path = os.path.join(os.path.dirname(__file__), "src", "results", "writer.py")
     spec = importlib.util.spec_from_file_location("writer", writer_path)
     writer_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(writer_module)

@@ -1,100 +1,67 @@
 #!/usr/bin/env python3
 """
-Performance comparison between subprocess and import-based approaches.
-This script measures execution time, memory usage, and resource consumption.
+Final performance comparison between subprocess and import-based approaches.
+This script measures execution time only.
 """
 
 import os
 import sys
 import time
-import psutil
 import tempfile
 import shutil
-from typing import Dict, List, Tuple
-import importlib.util
+from typing import Dict
 
 # Add experimentation directory to path
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src.runner.orchestrated import run_with_orchestration, run_with_orchestration_imports
-from src.runner.single_agent import run_without_orchestration, run_without_orchestration_imports
+# Import the runner modules using absolute paths
+orchestrated_path = os.path.join(os.path.dirname(__file__), "runner", "orchestrated.py")
+single_agent_path = os.path.join(os.path.dirname(__file__), "runner", "single_agent.py")
 
+import importlib.util
 
-class PerformanceMonitor:
-    """Monitor system performance during execution."""
-    
-    def __init__(self):
-        self.process = psutil.Process()
-        self.start_time = None
-        self.start_memory = None
-        self.peak_memory = None
-        self.cpu_samples = []
-    
-    def start(self):
-        """Start monitoring."""
-        self.start_time = time.time()
-        self.start_memory = self.process.memory_info().rss
-        self.peak_memory = self.start_memory
-        self.cpu_samples = []
-    
-    def sample(self):
-        """Take a performance sample."""
-        current_memory = self.process.memory_info().rss
-        self.peak_memory = max(self.peak_memory, current_memory)
-        
-        try:
-            cpu_percent = self.process.cpu_percent()
-            self.cpu_samples.append(cpu_percent)
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            pass
-    
-    def stop(self) -> Dict:
-        """Stop monitoring and return results."""
-        end_time = time.time()
-        end_memory = self.process.memory_info().rss
-        
-        return {
-            "execution_time": end_time - self.start_time,
-            "start_memory_mb": self.start_memory / 1024 / 1024,
-            "end_memory_mb": end_memory / 1024 / 1024,
-            "peak_memory_mb": self.peak_memory / 1024 / 1024,
-            "memory_delta_mb": (end_memory - self.start_memory) / 1024 / 1024,
-            "avg_cpu_percent": sum(self.cpu_samples) / len(self.cpu_samples) if self.cpu_samples else 0,
-            "max_cpu_percent": max(self.cpu_samples) if self.cpu_samples else 0,
-            "samples_count": len(self.cpu_samples)
-        }
+# Load orchestrated module
+orchestrated_spec = importlib.util.spec_from_file_location("orchestrated", orchestrated_path)
+orchestrated_module = importlib.util.module_from_spec(orchestrated_spec)
+orchestrated_spec.loader.exec_module(orchestrated_module)
+
+# Load single_agent module
+single_agent_spec = importlib.util.spec_from_file_location("single_agent", single_agent_path)
+single_agent_module = importlib.util.module_from_spec(single_agent_spec)
+single_agent_spec.loader.exec_module(single_agent_module)
 
 
 def run_performance_test(test_name: str, test_func, *args, **kwargs) -> Dict:
     """Run a performance test and return metrics."""
     print(f"\n🧪 Running performance test: {test_name}")
     
-    monitor = PerformanceMonitor()
-    monitor.start()
+    start_time = time.time()
     
     try:
         # Run the test function
         result = test_func(*args, **kwargs)
         
-        # Take final sample
-        monitor.sample()
-        metrics = monitor.stop()
+        end_time = time.time()
+        execution_time = end_time - start_time
         
-        # Add result info
-        metrics["success"] = result == 0
-        metrics["exit_code"] = result
+        metrics = {
+            "execution_time": execution_time,
+            "success": result == 0,
+            "exit_code": result
+        }
         
-        print(f"✅ {test_name} completed in {metrics['execution_time']:.3f}s")
-        print(f"   Memory: {metrics['start_memory_mb']:.1f}MB → {metrics['end_memory_mb']:.1f}MB (peak: {metrics['peak_memory_mb']:.1f}MB)")
-        print(f"   CPU: avg {metrics['avg_cpu_percent']:.1f}%, max {metrics['max_cpu_percent']:.1f}%")
-        
+        print(f"✅ {test_name} completed in {execution_time:.3f}s")
         return metrics
         
     except Exception as e:
-        monitor.sample()
-        metrics = monitor.stop()
-        metrics["success"] = False
-        metrics["error"] = str(e)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        
+        metrics = {
+            "execution_time": execution_time,
+            "success": False,
+            "error": str(e)
+        }
         print(f"❌ {test_name} failed: {e}")
         return metrics
 
@@ -106,7 +73,7 @@ def compare_approaches():
     
     # Setup test environment
     with tempfile.TemporaryDirectory() as temp_dir:
-        repo_root = os.path.dirname(os.path.dirname(__file__))  # Go up to project root
+        repo_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # Go up to project root
         persona = "persona-v1"
         case = "overall"
         model = "gpt-5-nano-2025-08-07"
@@ -127,28 +94,28 @@ def compare_approaches():
         # Test 1: Orchestrated Subprocess
         results["orchestrated_subprocess"] = run_performance_test(
             "Orchestrated (Subprocess)",
-            run_with_orchestration,
+            orchestrated_module.run_with_orchestration,
             repo_root, persona, case, model, reasoning, verbosity, output_dir
         )
         
         # Test 2: Orchestrated Import
         results["orchestrated_import"] = run_performance_test(
             "Orchestrated (Import)",
-            run_with_orchestration_imports,
+            orchestrated_module.run_with_orchestration_imports,
             repo_root, persona, case, model, reasoning, verbosity, output_dir
         )
         
         # Test 3: Single Agent Subprocess
         results["single_agent_subprocess"] = run_performance_test(
             "Single Agent (Subprocess)",
-            run_without_orchestration,
+            single_agent_module.run_without_orchestration,
             repo_root, persona, case, model, reasoning, verbosity, output_dir
         )
         
         # Test 4: Single Agent Import
         results["single_agent_import"] = run_performance_test(
             "Single Agent (Import)",
-            run_without_orchestration_imports,
+            single_agent_module.run_without_orchestration_imports,
             repo_root, persona, case, model, reasoning, verbosity, output_dir
         )
         
@@ -173,22 +140,10 @@ def generate_comparison_report(results: Dict):
         time_diff = import_metrics["execution_time"] - subprocess_metrics["execution_time"]
         time_improvement = (time_diff / subprocess_metrics["execution_time"]) * 100
         
-        memory_diff = import_metrics["peak_memory_mb"] - subprocess_metrics["peak_memory_mb"]
-        memory_improvement = (memory_diff / subprocess_metrics["peak_memory_mb"]) * 100
-        
         print(f"⏱️  Execution Time:")
         print(f"   Subprocess: {subprocess_metrics['execution_time']:.3f}s")
         print(f"   Import:     {import_metrics['execution_time']:.3f}s")
         print(f"   Difference: {time_diff:+.3f}s ({time_improvement:+.1f}%)")
-        
-        print(f"💾 Peak Memory:")
-        print(f"   Subprocess: {subprocess_metrics['peak_memory_mb']:.1f}MB")
-        print(f"   Import:     {import_metrics['peak_memory_mb']:.1f}MB")
-        print(f"   Difference: {memory_diff:+.1f}MB ({memory_improvement:+.1f}%)")
-        
-        print(f"🖥️  CPU Usage:")
-        print(f"   Subprocess: avg {subprocess_metrics['avg_cpu_percent']:.1f}%, max {subprocess_metrics['max_cpu_percent']:.1f}%")
-        print(f"   Import:     avg {import_metrics['avg_cpu_percent']:.1f}%, max {import_metrics['max_cpu_percent']:.1f}%")
     
     # Single Agent comparison
     print("\n🤖 SINGLE AGENT PIPELINE COMPARISON:")
@@ -201,22 +156,10 @@ def generate_comparison_report(results: Dict):
         time_diff = import_metrics["execution_time"] - subprocess_metrics["execution_time"]
         time_improvement = (time_diff / subprocess_metrics["execution_time"]) * 100
         
-        memory_diff = import_metrics["peak_memory_mb"] - subprocess_metrics["peak_memory_mb"]
-        memory_improvement = (memory_diff / subprocess_metrics["peak_memory_mb"]) * 100
-        
         print(f"⏱️  Execution Time:")
         print(f"   Subprocess: {subprocess_metrics['execution_time']:.3f}s")
         print(f"   Import:     {import_metrics['execution_time']:.3f}s")
         print(f"   Difference: {time_diff:+.3f}s ({time_improvement:+.1f}%)")
-        
-        print(f"💾 Peak Memory:")
-        print(f"   Subprocess: {subprocess_metrics['peak_memory_mb']:.1f}MB")
-        print(f"   Import:     {import_metrics['peak_memory_mb']:.1f}MB")
-        print(f"   Difference: {memory_diff:+.1f}MB ({memory_improvement:+.1f}%)")
-        
-        print(f"🖥️  CPU Usage:")
-        print(f"   Subprocess: avg {subprocess_metrics['avg_cpu_percent']:.1f}%, max {subprocess_metrics['max_cpu_percent']:.1f}%")
-        print(f"   Import:     avg {import_metrics['avg_cpu_percent']:.1f}%, max {import_metrics['max_cpu_percent']:.1f}%")
     
     # Summary
     print("\n📋 SUMMARY:")

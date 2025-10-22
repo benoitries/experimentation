@@ -12,7 +12,7 @@ This project provides a unified interface for running both orchestrated and sing
   - `io/` - Input/output utilities
     - `input_sync.py` - Input synchronization utilities
   - `utils.py` - Common utilities
-- `results/` - Results management utilities
+- `src/results/` - Results management utilities
   - `writer.py` - Results writer (writes to output/ directory)
 - `input/` - Synchronized input files
 - `output/` - Experiment output files
