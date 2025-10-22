@@ -195,6 +195,12 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
     print(f"Logging to: {log_file}")
     
     with open(log_file, "w", encoding="utf-8") as logf:
-        proc = subprocess.run(cmd, cwd=repo_root, stdout=logf, stderr=subprocess.STDOUT, env=env)
+        proc = subprocess.Popen(cmd, cwd=repo_root, stdout=subprocess.PIPE, 
+                               stderr=subprocess.STDOUT, env=env, text=True, bufsize=1)
+        for line in proc.stdout:
+            print(f"[ORCHESTRATOR] {line}", end="")
+            logf.write(line)
+            logf.flush()
+        proc.wait()
         print(f"Orchestrated pipeline completed with exit code: {proc.returncode}")
         return proc.returncode
