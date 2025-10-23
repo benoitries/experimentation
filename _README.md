@@ -46,8 +46,7 @@ Runs both pipelines for comparison.
 The experimentation runner automatically syncs required input files from the main code projects:
 - `input-netlogo/` - NetLogo source files
 - `input-persona/` - Agent personas
-- `input-icrash/` - iCrash reference documents
-- `input-images/` - Interface images
+- `input-valid-examples/` - Valid example diagrams and concepts
 
 ## Output Structure
 

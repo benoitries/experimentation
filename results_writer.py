@@ -58,7 +58,7 @@ def _analyze_audit_data(output_dir: str) -> Dict[str, Any]:
     # Check for single agent outputs
     single_agent_dir = os.path.join(output_dir, "single_agent_output")
     if os.path.exists(single_agent_dir):
-        audit_files.extend(glob.glob(os.path.join(single_agent_dir, "*audit*.json")))
+        audit_files.extend(glob.glob(os.path.join(single_agent_dir, "*", "*audit*.json")))
     
     # Check for orchestrated outputs
     orchestrated_dir = os.path.join(output_dir, "orchestrated_output")

@@ -145,8 +145,7 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
     # Set up input directories to point to experimentation/input/
     experimentation_input_dir = os.path.join(repo_root, "experimentation", "input")
     env["INPUT_NETLOGO_DIR"] = os.path.join(experimentation_input_dir, "input-netlogo")
-    env["INPUT_ICRASH_DIR"] = os.path.join(experimentation_input_dir, "input-icrash")
-    env["INPUT_IMAGES_DIR"] = os.path.join(experimentation_input_dir, "input-images")
+    env["INPUT_VALID_EXAMPLES_DIR"] = os.path.join(experimentation_input_dir, "input-valid-examples")
     env["INPUT_PERSONA_DIR"] = os.path.join(experimentation_input_dir, "input-persona")
     
     # Sanitize OPENAI_API_KEY if it was exported/copied with shell syntax

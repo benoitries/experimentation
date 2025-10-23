@@ -11,8 +11,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 # Set up environment variables BEFORE importing modules
 os.environ['INPUT_PERSONA_DIR'] = os.path.join(REPO_ROOT, "experimentation", "input", "input-persona")
 os.environ['INPUT_NETLOGO_DIR'] = os.path.join(REPO_ROOT, "experimentation", "input", "input-netlogo")
-os.environ['INPUT_ICRASH_DIR'] = os.path.join(REPO_ROOT, "experimentation", "input", "input-icrash")
-os.environ['INPUT_IMAGES_DIR'] = os.path.join(REPO_ROOT, "experimentation", "input", "input-images")
+os.environ['INPUT_VALID_EXAMPLES_DIR'] = os.path.join(REPO_ROOT, "experimentation", "input", "input-valid-examples")
 
 # Add the code-netlogo-to-messir directory to the Python path
 sys.path.insert(0, os.path.join(REPO_ROOT, 'code-netlogo-to-messir'))
