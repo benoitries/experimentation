@@ -1,0 +1,53 @@
+@startuml
+
+skinparam participant {
+    BorderColor #000000
+    BorderThickness 0.2
+    BackgroundColor #FFF3B3
+}
+skinparam sequenceArrow {
+    Color #gray
+}
+
+participant System as system #E8C28A
+participant "theCreator:actMsrCreator" as theCreator
+participant "theClock:actActivator" as theClock
+participant "bill:actAdministrator" as bill
+
+theCreator -> system : oeCreateSystemAndEnvironment("4")
+activate theCreator #274364
+deactivate theCreator
+
+theClock -> system : oeSetClock("2017:11:24 - 03:20:00")
+activate theClock #274364
+deactivate theClock
+
+bill -> system : oeLogin("icrashadmin","7WXC1359")
+activate bill #274364
+deactivate bill
+
+system --> bill : ieMessage("You are logged ! Welcome ...")
+activate bill #C0EBFD
+deactivate bill
+
+bill -> system : oeAddCoordinator("1","steve","pwdMessirExcalibur2017")
+activate bill #274364
+deactivate bill
+
+system --> bill : ieCoordinatorAddedreturned()
+activate bill #C0EBFD
+deactivate bill
+
+bill -> system : oeLogout()
+activate bill #274364
+deactivate bill
+
+system --> bill : ieMessage("You are logged out ! Good Bye ...")
+activate bill #C0EBFD
+deactivate bill
+
+theClock -> system : oeSetClock("2017:11:26 - 10:15:00")
+activate theClock #274364
+deactivate theClock
+
+@enduml

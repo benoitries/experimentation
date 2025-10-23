@@ -1,0 +1,28 @@
+@startuml
+
+skinparam participant {
+    BorderColor #000000
+    BorderThickness 0.2
+    BackgroundColor #FFF3B3
+}
+skinparam sequenceArrow {
+    Color #gray
+}
+
+participant System as system #E8C28A
+participant "theCreator:ActMsrCreator" as theCreator
+participant "you:ActYou" as you
+
+theCreator -> system : oeCreateSystemAndEnvironment()
+activate theCreator #274364
+deactivate theCreator
+
+you -> system : oeHelloWorld()
+activate you #274364
+deactivate you
+
+system --> you : ieHelloWorld("HelloWorld !")
+activate you #C0EBFD
+deactivate you
+
+@enduml
