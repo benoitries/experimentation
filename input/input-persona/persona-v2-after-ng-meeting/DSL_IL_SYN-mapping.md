@@ -1,6 +1,8 @@
-## NetLogo → DSL IL Mapping (NL-IL)
+<IL-SYN-MAPPING>
 
-This file describes how NetLogo surface concepts are represented using the minimal IL defined in DSL_IL_SYN-description.md. Only high-level structure is mapped; concepts that are not mapped to the IL are excluded by design.
+## Mapping of NetLogo syntax → DSL IL-SYN syntax
+
+This file describes how NetLogo surface concepts are represented using <IL-SYN-DESCRIPTION>. Only high-level structure is mapped; concepts that are not mapped to the IL-SYN are excluded by design.
 
 ### Mapping Rules 
 
@@ -16,10 +18,14 @@ This file describes how NetLogo surface concepts are represented using the minim
 - observer (implicit) → Declaration(Type): optional Type named "Observer" if needed to host observer-scoped fields (rare); otherwise omit.
 - to proc [args] → Function: Function.name = proc; Signature.parameters from args (Parameter.type = "any"); Signature.returnType = null.
 - to-report proc [args] → Function: same as above, but Signature.returnType = "any" (or a named Type if known externally).
-- Primitives (built-ins), statements, and expressions → not represented (out of scope for this IL).
+- Primitives (built-ins), statements, and expressions → not represented (out of scope for this IL-SYN).
 
 ### Normalization Notes
 
 - Type names should be stable identifiers (e.g., `TurtleBreed` rather than pluralized lists); apply consistent casing.
-- When NetLogo variables imply known domains (e.g., color, coordinates), keep `type = "any"` in this IL; richer typing belongs to a separate semantics descriptor.
 - If a breed has no own-variables, it still maps to a Type with an empty fields list.
+
+See also:
+- Syntax descriptor : `<IL-SYN-DESCRIPTION>`.
+
+</IL-SYN-MAPPING>

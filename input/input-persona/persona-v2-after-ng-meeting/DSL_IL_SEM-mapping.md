@@ -1,6 +1,8 @@
-## NetLogo → DSL IL SEM Mapping (NL-SEM)
+<IL-SEM-MAPPING>
 
-This file describes how NetLogo semantic surface is represented using the minimal semantics IL defined in `DSL_IL_SEM-description.md`. Only high-level semantics are mapped; statements and expressions are excluded by design.
+## Mapping of NetLogo semantics → DSL IL-SEM semantics
+
+This file describes how NetLogo semantic surface is represented using <IL-SEM-DESCRIPTION>. Only high-level semantics are mapped; statements and expressions are excluded by design.
 
 ### Mapping Rules
 
@@ -38,3 +40,8 @@ This file describes how NetLogo semantic surface is represented using the minima
 - Keep Attribute `type = "any"` unless a stable domain is known. Richer domains belong to separate descriptors.
 - If a breed has no own-variables, still create an Entity with an empty `attributes` list.
 - Keep effects high-level and optional when intent is unclear.
+
+See also:
+- Semantics descriptor : `<IL-SEM-DESCRIPTION>`.
+
+</IL-SEM-MAPPING>

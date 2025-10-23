@@ -1,6 +1,9 @@
-## DSL IL — Syntax Descriptor (for PSN1)
 
-This document specifies which aspects of a program are included and excluded in the minimal intermediate language (IL) syntax.
+<IL-SYN-DESCRIPTION>
+
+## DSL IL-SYN (Intermediate Language — Syntax Descriptor)
+
+This document specifies which aspects of a program are included and excluded in the minimal intermediate language (IL-SYN) syntax.
 
 **Inclusions:**  
 - High-level structural constructs only:  
@@ -18,7 +21,7 @@ This ensures the abstraction remains portable and language-agnostic.
 
 ### M2 — Metamodel Concepts (concise definitions with rationale)
 
-- Program: The root container of a compilation unit (model or module); rationale: provides a single entry point to hold language-agnostic structure.
+- Program: The root container of a compilation unit (model or module); rationale: provides a single entry point to hold intermediate language structure.
 - Import: A reference to external modules or namespaces; rationale: captures inter-module dependencies without embedding semantics.
 - Declaration: A named binding that introduces a Type into scope; rationale: standardizes how named data shapes enter the program.
 - Type: A named data shape describing records or nominal entities; rationale: enables structural modeling independent of execution.
@@ -68,8 +71,10 @@ The following JSON template specifies the exact structure permitted for M1 insta
 ```
 
 Notes:
-- "type" fields in this IL are simple type references (qualified names or builtins such as "number", "string").
-- This IL is intentionally minimal; optional additional concerns (semantics, constraints) should live in separate descriptors.
+- "type" fields in this IL-SYN are simple type references (qualified names or builtins such as "number", "string").
+- This IL-SYN is intentionally minimal; optional additional concerns (semantics, constraints) should live in separate descriptors.
 
 See also:
-- Syntax mapping description : `DSL_IL_SYN-mapping.md`.
+- Syntax mapping description : `<IL-SYN-MAPPING>`.
+
+</IL-SYN-DESCRIPTION>

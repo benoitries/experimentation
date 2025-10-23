@@ -1,6 +1,8 @@
-## DSL IL — Semantics Descriptor 
+<IL-SEM-DESCRIPTION>
 
-This document defines a compact Intermediate Language (IL) to represent program-level semantics. It captures meaning-oriented concepts required for downstream mapping (e.g., to Messir/UCI) while remaining portable across languages and tools.
+## DSL IL-SEM (Intermediate Language — Semantics Descriptor)
+
+This document defines an Intermediate Language (IL-SEM) to represent program-level semantics. 
 
 **Inclusions:**  
 The semantics descriptor captures entities, roles, scopes, ownership, relations, operations (capabilities), effects, constraints, events, and interaction channels.
@@ -10,7 +12,7 @@ Implementation details such as concrete statements or expressions are intentiona
 
 ### M2 — Metamodel Concepts (concise definitions with rationale)
 
-- Entity: A named semantic kind (e.g., Turtle breed, Patch, Link, Globals) that aggregates attributes and capabilities; rationale: models domain-relevant actors/data in a language-neutral way.
+- Entity: A named semantic kind (e.g., Turtle breed, Patch, Link, Globals) that aggregates attributes and capabilities; rationale: models domain-relevant actors/data in an intermediate language.
 - Role: A named viewpoint or responsibility assumed by an Entity (e.g., Observer, Turtle, Link scope); rationale: isolates responsibilities and contextual behavior.
 - Attribute: A named semantic property of an Entity; rationale: captures state relevant to behavior and constraints.
 - Relation: A typed association between Entities (e.g., adjacency, ownership, membership); rationale: encodes structural semantics beyond raw data shape.
@@ -24,12 +26,9 @@ Implementation details such as concrete statements or expressions are intentiona
 - Channel: An interaction pathway used by Operations (e.g., broadcast/ask-like targeting); rationale: abstracts interaction patterns.
 - View (Projection): A named, derived perspective over Entities/Relations/Attributes; rationale: supports queries/analytics without embedding expressions.
 
-Notes:
-- The IL is minimal and neutral. Rich typing or formal logic should live in separate descriptors.
-
 ### M1 — Model Structure (JSON template)
 
-The following JSON template specifies the allowed structure for M1 instances. Keys and lists are deterministic to be LLM-friendly.
+The following JSON template specifies the allowed structure for IL-SEM instances.
 
 ```json
 {
@@ -76,6 +75,10 @@ Notes:
 - Keep `effects` high-level; detailed dataflow or semantics belong in specialized descriptors.
 - The `expression` and `predicate` fields are placeholders for human-readable intent, not executable code.
 
+See also:
+- Semantics mapping description : `<IL-SEM-MAPPING>`.
+
+</IL-SEM-DESCRIPTION>
 
 
 
