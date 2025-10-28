@@ -1,0 +1,1 @@
+TASK: Transform NetLogo code <INPUT_NETLOGO_CODE> into a LUCIM-compliant PlantUML sequence diagram. The sequence should be a single scenario with at least three actors and a minimum of three events, including at least one input and one output event.
