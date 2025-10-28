@@ -36,8 +36,8 @@ def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode:
 
 
 def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
-    """Find the latest single-agent run directory under code-nl2-messir-without-orchestration/output/*."""
-    runs_root = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "output")
+    """Find the latest single-agent run directory under code-netlogo-to-lucim-single-agent/output/*."""
+    runs_root = os.path.join(repo_root, "code-netlogo-to-lucim-single-agent", "output")
     if not os.path.isdir(runs_root):
         return None
     candidates = []
@@ -109,12 +109,12 @@ def run_without_orchestration_imports(repo_root: str, persona: str, case: Option
 
 def run_without_orchestration(repo_root: str, persona: str, case: Optional[str], model: Optional[str], reasoning: Optional[str], verbosity: Optional[str], output_dir: str) -> int:
     """Run the single agent pipeline via subprocess"""
-    scripts_path = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "scripts")
+    scripts_path = os.path.join(repo_root, "code-netlogo-to-lucim-single-agent", "scripts")
     candidate = os.path.join(scripts_path, "run_default.py")
     
     cmd: List[str]
     # Always use direct agent execution to ensure environment variables are passed
-    agent_script = os.path.join(repo_root, "code-nl2-messir-without-orchestration", "agent_netlogo_to_lucim.py")
+    agent_script = os.path.join(repo_root, "code-netlogo-to-lucim-single-agent", "agent_netlogo_to_lucim.py")
     python_path = sys.executable
     cmd = [python_path, agent_script]
     if case:

@@ -13,8 +13,8 @@ os.environ['INPUT_PERSONA_DIR'] = os.path.join(REPO_ROOT, "experimentation", "in
 os.environ['INPUT_NETLOGO_DIR'] = os.path.join(REPO_ROOT, "experimentation", "input", "input-netlogo")
 os.environ['INPUT_VALID_EXAMPLES_DIR'] = os.path.join(REPO_ROOT, "experimentation", "input", "input-valid-examples")
 
-# Add the code-netlogo-to-messir directory to the Python path
-sys.path.insert(0, os.path.join(REPO_ROOT, 'code-netlogo-to-messir'))
+# Add the code-netlogo-to-lucim-agentic-workflow directory to the Python path
+sys.path.insert(0, os.path.join(REPO_ROOT, 'code-netlogo-to-lucim-agentic-workflow'))
 
 # Import UI utilities from the orchestrator
 try:
@@ -59,7 +59,7 @@ def choose_cases() -> List[str]:
     """Interactive case selection"""
     cases = list_netlogo_cases()
     if not cases:
-        print("No NetLogo cases found in code-netlogo-to-messir/input-netlogo/")
+        print("No NetLogo cases found in code-netlogo-to-lucim-agentic-workflow/input-netlogo/")
         return []
     
     print("Available NetLogo cases:")

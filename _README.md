@@ -33,10 +33,10 @@ The script will:
 ## Pipeline Modes
 
 ### Orchestrated Mode
-Runs the full 8-stage orchestrated pipeline from `code-netlogo-to-messir/`.
+Runs the full 8-stage orchestrated pipeline from `code-netlogo-to-lucim-agentic-workflow/`.
 
 ### Single Agent Mode  
-Runs the single-agent pipeline from `code-nl2-messir-without-orchestration/`.
+Runs the single-agent pipeline from `code-netlogo-to-lucim-single-agent/`.
 
 ### Both Mode
 Runs both pipelines for comparison.

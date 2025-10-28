@@ -31,8 +31,8 @@ def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode:
 
 
 def _find_latest_run_dir_orchestrated(repo_root: str) -> Optional[str]:
-    """Find the latest orchestrated run directory under code-netlogo-to-messir/output/runs/*."""
-    runs_root = os.path.join(repo_root, "code-netlogo-to-messir", "output", "runs")
+    """Find the latest orchestrated run directory under code-netlogo-to-lucim-agentic-workflow/output/runs/*."""
+    runs_root = os.path.join(repo_root, "code-netlogo-to-lucim-agentic-workflow", "output", "runs")
     if not os.path.isdir(runs_root):
         return None
     candidates = []
@@ -108,7 +108,7 @@ def run_with_orchestration_imports(repo_root: str, persona: str, case: Optional[
 
 def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], model: Optional[str], reasoning: Optional[str], verbosity: Optional[str], output_dir: str) -> int:
     """Run the orchestrated pipeline via subprocess"""
-    scripts_path = os.path.join(repo_root, "code-netlogo-to-messir", "scripts")
+    scripts_path = os.path.join(repo_root, "code-netlogo-to-lucim-agentic-workflow", "scripts")
     candidate = os.path.join(scripts_path, "run_default_nano.py")
     
     cmd: List[str]
@@ -126,7 +126,7 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
             cmd.extend(["--verbosity", verbosity])
     else:
         # Fallback to orchestrator.py
-        orchestrator = os.path.join(repo_root, "code-netlogo-to-messir", "orchestrator.py")
+        orchestrator = os.path.join(repo_root, "code-netlogo-to-lucim-agentic-workflow", "orchestrator.py")
         python_path = sys.executable
         cmd = [python_path, orchestrator]
         if case:
