@@ -1,0 +1,3 @@
+<TASK>
+Analyze the provided <NETLOGO-INTERFACE-IMAGES> to extract widget information. Return a JSON array of detected widgets with type, name, and description fields. 
+</TASK>

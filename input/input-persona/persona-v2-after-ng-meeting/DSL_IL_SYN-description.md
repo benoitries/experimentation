@@ -1,4 +1,3 @@
-
 <IL-SYN-DESCRIPTION>
 
 ## DSL IL-SYN (Intermediate Language — Syntax Descriptor)

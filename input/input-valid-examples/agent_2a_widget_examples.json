@@ -1,0 +1,74 @@
+{
+  "valid_examples": [
+    {
+      "type": "Button",
+      "name": "setup",
+      "description": "Setup button visible in initial interface, triggers model initialization when pressed during simulation"
+    },
+    {
+      "type": "Slider",
+      "name": "population",
+      "description": "Population slider with range 0-1000, controls initial agent count; value changes during simulation affect agent density"
+    },
+    {
+      "type": "Switch",
+      "name": "enable-migration",
+      "description": "Boolean switch controlling agent migration behavior; toggled on/off during simulation to test different scenarios"
+    },
+    {
+      "type": "Chooser",
+      "name": "behavior-mode",
+      "description": "Dropdown chooser with options 'random', 'cooperative', 'competitive'; selection determines agent interaction patterns"
+    },
+    {
+      "type": "Input",
+      "name": "max-steps",
+      "description": "Numeric input field for maximum simulation steps; value entered before simulation starts"
+    },
+    {
+      "type": "Monitor",
+      "name": "current-population",
+      "description": "Display monitor showing real-time population count; updates continuously during simulation"
+    },
+    {
+      "type": "Plot",
+      "name": "population-over-time",
+      "description": "Line plot tracking population changes over time; visible in both initial and simulation interfaces"
+    },
+    {
+      "type": "Output",
+      "name": "simulation-log",
+      "description": "Text output area displaying simulation events and results; content updates during simulation"
+    },
+    {
+      "type": "Note",
+      "name": "instructions",
+      "description": "Static text note providing user instructions; remains unchanged between initial and simulation states"
+    }
+  ],
+  "invalid_examples": [
+    {
+      "type": "InvalidType",
+      "name": "test",
+      "description": "Invalid widget type not in allowed enum"
+    },
+    {
+      "name": "missing-type",
+      "description": "Missing required 'type' field"
+    },
+    {
+      "type": "Button",
+      "description": "Missing required 'name' field"
+    },
+    {
+      "type": "Slider",
+      "name": ""
+    },
+    {
+      "type": "Button",
+      "name": "test",
+      "description": "",
+      "extra_field": "not allowed"
+    }
+  ]
+}

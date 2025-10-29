@@ -1,1 +1,95 @@
-TASK: Transform NetLogo code <INPUT_NETLOGO_CODE> into a LUCIM-compliant PlantUML sequence diagram. The sequence should be a single scenario with at least three actors and a minimum of three events, including at least one input and one output event.
+<TASK>
+
+Goal: Convert the input NetLogo code into two ouputs; output 1: a LUCIM-compliant PlantUML sequence diagram ; output 2: a compliance audit report ; through a consolidated, single-agent workflow that internally mirrors the orchestrated 8-stage pipeline. Follow the canonical prompt order and use the correct personas and intermediate artifacts at each stage.
+
+Reference Inputs
+- NetLogo case source code: <NETLOGO-SOURCE-CODE>
+- NetLogo interface images: <NETLOGO-INTERFACE-IMAGES>
+- Persona set files:
+  - <PSN_1_NetLogoSyntaxParser> (Agent 1)
+  - <PSN_2a_NetlogoInterfaceImageAnalyzer> (Agent 2a)
+  - <PSN_2b_NetlogoBehaviorExtractor> (Agent 2b)
+  - <PSN_3_LUCIMEnvironmentSynthesizer> (Agent 3)
+  - <PSN_4_LUCIMScenarioSynthesizer> (Agent 4)
+  - <PSN_5_PlantUMLWriter> (Agent 5)
+  - <PSN_6_PlantUMLLUCIMAuditor> (Agent 6 and 8)
+  - <PSN_7_PlantUMLLUCIMCorrector> (Agent 7)
+- DSL references:
+  - IL-SYN: <IL-SYN-DESCRIPTION>, <IL-SYN-MAPPING>
+  - IL-SEM: <IL-SEM-DESCRIPTION>, <IL-SEM-MAPPING>
+  - LUCIM rules: <LUCIM-RULES>
+
+Canonical Prompt Order (all internal calls)
+1) task_content (single-agent task requirements)
+2) persona (relevant persona placeholder)
+3) agent-specific instructions (e.g., <LUCIM-RULES>)
+4) agent-specific inputs (e.g., state_machine)
+
+Natural-Language Orchestration (8 internal stages)
+1) Syntax Parser (Agent 1)
+   - Persona: <PSN_1_NetLogoSyntaxParser>
+   - Inputs: <IL-SYN-DESCRIPTION> then <IL-SYN-MAPPING>; <NETLOGO-SOURCE-CODE>
+   - Output: AST as JSON
+
+2a) Interface Image Analyzer (Agent 2a)
+   - Persona: <PSN_2a_NetlogoInterfaceImageAnalyzer>
+   - Inputs: <NETLOGO-INTERFACE-IMAGES>
+   - Output: JSON array of widgets
+
+2b) Behavior Extractor (Agent 2b)
+   - Persona: <PSN_2b_NetlogoBehaviorExtractor>
+   - Inputs: <NETLOGO-INTERFACE-DESCRIPTION> (output of 2a); <IL-SEM-DESCRIPTION> then <IL-SEM-MAPPING>
+   - Output:  <ABSTRACT_BEHAVIOR_MODEL> as JSON
+
+3) LUCIM Environment Synthesizer (Agent 3)
+   - Persona: <PSN_3_LUCIMEnvironmentSynthesizer>
+   - Inputs: Step 02 state machine; <LUCIM-RULES>
+   - Output: LUCIM environment model as JSON
+
+4) LUCIM Scenario Synthesizer (Agent 4)
+   - Persona: <PSN_4_LUCIMScenarioSynthesizer>
+   - Inputs: Step 02 state machine; Step 03 LUCIM concepts; <LUCIM-RULES>
+   - Output: LUCIM scenarios as JSON
+
+5) PlantUML Writer (Agent 5)
+   - Persona: <PSN_5_PlantUMLWriter>
+   - Inputs: Step 04 scenarios; <LUCIM-RULES>
+   - Output: PlantUML diagram as a standalone diagram artifact
+
+6) PlantUML LUCIM Auditor (Agent 6)
+   - Persona: <PSN_6_PlantUMLLUCIMAuditor>
+   - Inputs: Step 05 plantUML diagram artifact; <LUCIM-RULES>
+   - Output: Audit report as JSON with verdict and non-compliant rules
+
+7) PlantUML LUCIM Corrector (Agent 7)
+   - Persona: <PSN_7_PlantUMLLUCIMCorrector>
+   - Inputs: Step 05 diagram(s); Step 06 non-compliant rules; <LUCIM-RULES>
+   - Output: Corrected diagram as standalone plantUML diagram artifact
+
+8) PlantUML LUCIM Final Auditor (Agent 8)
+   - Persona: <PSN_6_PlantUMLLUCIMAuditor>
+  - Inputs: <PSN_6_PlantUMLLUCIMAuditor>; corrected diagram(s) from Step 07; <LUCIM-RULES>
+   - Output: Final compliance verdict as JSON
+
+**Output JSON Format**
+- Return strict JSON only. Do not include Markdown code fences or any text outside the JSON object.
+- All JSON objects returned must comply with the following schemas:
+
+{
+  "plantuml_diagram": "LUCIM-compliant PlantUML sequence diagram as a standalone diagram artifact",
+  "compliance_audit_report": {
+    "verdict": "compliant|non-compliant",
+    "non-compliant-rules": [
+      "RULE_NUMBER_AND_NAME",
+      "RULE_NUMBER_AND_NAME",
+      "RULE_NUMBER_AND_NAME"
+    ]
+  },
+  "errors": [
+    "ERROR_DESCRIPTION",
+    "ERROR_DESCRIPTION",
+    "ERROR_DESCRIPTION"
+  ]
+}
+
+</TASK>

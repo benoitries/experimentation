@@ -1,1 +1,3 @@
-TASK: Generate a PlantUML sequence diagram from the scenario data following LUCIM compliance rules.
+<TASK>
+Generate a PlantUML sequence diagram from the scenario data following LUCIM compliance rules.
+</TASK>

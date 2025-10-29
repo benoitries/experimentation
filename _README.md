@@ -45,8 +45,38 @@ Runs both pipelines for comparison.
 
 The experimentation runner automatically syncs required input files from the main code projects:
 - `input-netlogo/` - NetLogo source files
-- `input-persona/` - Agent personas
+- `input-persona/` - Agent persona sets (symlinks to the canonical `experimentation/input/input-persona/`)
 - `input-valid-examples/` - Valid example diagrams and concepts
+
+Note: Persona directories under `input-persona/` are symbolic links to `experimentation/input/input-persona/`. The default persona set is `persona-v1`; you can change it at runtime via the interactive selection menu in both pipelines.
+
+Example layout:
+
+```
+experimentation/
+  input/
+    input-persona/
+      persona-v1/
+        PSN_1_NetLogoAbstractSyntaxExtractor.md
+        PSN_2a_NetlogoInterfaceImageAnalyzer.md
+        PSN_2b_NetlogoBehaviorExtractor.md
+        PSN_3_LUCIMEnvironmentSynthesizer.md
+        PSN_4_LUCIMScenarioSynthesizer.md
+        PSN_5_PlantUMLWriter.md
+        PSN_6_PlantUMLLUCIMAuditor.md
+        PSN_7_PlantUMLLUCIMCorrector.md
+        DSL_Target_LUCIM-full-definition-for-compliance.md
+      persona-v2-after-ng-meeting/
+        PSN_1_NetLogoAbstractSyntaxExtractor.md
+        PSN_2a_NetlogoInterfaceImageAnalyzer.md
+        PSN_2b_NetlogoBehaviorExtractor.md
+        PSN_3_LUCIMEnvironmentSynthesizer.md
+        PSN_4_LUCIMScenarioSynthesizer.md
+        PSN_5_PlantUMLWriter.md
+        PSN_6_PlantUMLLUCIMAuditor.md
+        PSN_7_PlantUMLLUCIMCorrector.md
+        DSL_Target_LUCIM-full-definition-for-compliance.md
+```
 
 ## Output Structure
 

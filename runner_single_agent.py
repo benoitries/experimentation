@@ -36,13 +36,22 @@ def copy_output_files_to_experimentation(source_dir: str, target_dir: str, mode:
 
 
 def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
-    """Find the latest single-agent run directory under code-netlogo-to-lucim-single-agent/output/*."""
-    runs_root = os.path.join(repo_root, "code-netlogo-to-lucim-single-agent", "output")
+    """Find the latest single-agent combination directory under output/runs/YYYY-MM-DD/HHMM-<persona>/<combo>.
+
+    Returns the deepest combination folder so that copied files do not include
+    extra intermediate path components (like the date/persona level).
+    """
+    import glob
+
+    base_output = os.path.join(repo_root, "code-netlogo-to-lucim-single-agent", "output")
+    runs_root = os.path.join(base_output, "runs")
     if not os.path.isdir(runs_root):
         return None
+
+    # Look for deepest combo directories: runs/*/*/*
+    pattern = os.path.join(runs_root, "*", "*", "*")
     candidates = []
-    for name in os.listdir(runs_root):
-        path = os.path.join(runs_root, name)
+    for path in glob.glob(pattern):
         if not os.path.isdir(path):
             continue
         try:
@@ -50,8 +59,13 @@ def _find_latest_run_dir_single_agent(repo_root: str) -> Optional[str]:
         except OSError:
             continue
         candidates.append((mtime, path))
-    # Return newest directory
-    return candidates and sorted(candidates, key=lambda x: x[0], reverse=True)[0][1] or None
+
+    if not candidates:
+        return None
+
+    # Pick the newest combination directory
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    return candidates[0][1]
 
 
 
@@ -120,7 +134,7 @@ def run_without_orchestration(repo_root: str, persona: str, case: Optional[str],
     if case:
         cmd.extend(["--case", case])
     if persona:
-        cmd.extend(["--persona", persona])
+        cmd.extend(["--persona_set", persona])
     if model:
         cmd.extend(["--model", model])
     if reasoning:
@@ -146,8 +160,12 @@ def run_without_orchestration(repo_root: str, persona: str, case: Optional[str],
     print(f"Running single agent pipeline: {' '.join(cmd)}")
     print(f"Logging to: {log_file}")
     
+    # Run from the single-agent project directory so relative paths like
+    # "input-task/single-agent-task" resolve correctly.
+    single_agent_cwd = os.path.join(repo_root, "code-netlogo-to-lucim-single-agent")
+
     with open(log_file, "w", encoding="utf-8") as logf:
-        proc = subprocess.Popen(cmd, cwd=repo_root, stdout=subprocess.PIPE,
+        proc = subprocess.Popen(cmd, cwd=single_agent_cwd, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT, env=env, text=True, bufsize=1)
         for line in proc.stdout:
             print(f"[SINGLE-AGENT] {line}", end="")

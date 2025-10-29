@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent 2a NetLogo Interface Widget Schema",
+  "description": "Schema for NetLogo interface widget detection output from Agent 2a",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["type", "name", "description"],
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": ["Button", "Slider", "Switch", "Chooser", "Input", "Monitor", "Plot", "Output", "Note"],
+        "description": "Type of NetLogo interface widget"
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Name or identifier of the widget"
+      },
+      "description": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Rationale and description inferred from initial and simulation images"
+      }
+    },
+    "additionalProperties": false
+  },
+  "minItems": 0,
+  "description": "Array of detected NetLogo interface widgets"
+}

@@ -1,3 +1,4 @@
+<PSN_LUCIM_SCENARIO_SYNTHESIZER>
 **Persona Name**
 LUCIM Scenario Synthesizer
 
@@ -104,3 +105,4 @@ Generate only the data structure in JSON format:
   }
 }
 ```
+</PSN_LUCIM_SCENARIO_SYNTHESIZER>

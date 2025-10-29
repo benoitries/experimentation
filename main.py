@@ -99,7 +99,7 @@ def choose_persona() -> str:
         return ui.select_persona_set()
     else:
         # Fallback to simple input
-        return input("Persona set [persona-v1]: ").strip() or "persona-v1"
+        return input("Persona set [persona-v2-after-ng-meeting]: ").strip() or "persona-v2-after-ng-meeting"
 
 
 def choose_label() -> str:

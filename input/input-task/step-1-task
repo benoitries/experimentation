@@ -1,1 +1,3 @@
-TASK: Parse the NetLogo code <INPUT_NETLOGO_CODE> into a structured Abstract Syntax Tree (AST) following <IL-SYN-DESCRIPTION> and <IL-SYN-MAPPING>.
+<TASK>
+Using your expertise <PSN_NetlogoAbstractSyntaxExtractor>, parse the NetLogo code <INPUT_NETLOGO_CODE> and generate an <ABSTRACT_SYNTAX> description compliant with <IL-SYN-DESCRIPTION> and <IL-SYN-MAPPING> and return it as a JSON object.
+</TASK>

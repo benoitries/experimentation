@@ -1,0 +1,3 @@
+<TASK>
+Using your expertise <PSN_NetlogoBehaviorExtractor>, extract behavioral patterns from <NETLOGO-SOURCE-CODE> to build an <ABSTRACT_BEHAVIOR_MODEL> description compliant with <IL-SEM-DESCRIPTION> and <IL-SEM-MAPPING>.
+</TASK>

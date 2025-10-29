@@ -85,6 +85,41 @@ def run_automated_test():
             print(f"Exit code: {exit_code}")
             print(f"Status: {result['status']}")
             
+            # Post-run validation for orchestrated mode: validate Agent 2a widgets
+            if test_case['mode'] == 'with' and exit_code == 0:
+                try:
+                    # Find latest orchestrated output dir
+                    from runner_orchestrated import _find_latest_run_dir_orchestrated
+                    latest_dir = _find_latest_run_dir_orchestrated(REPO_ROOT)
+                    if latest_dir:
+                        # Locate 02a output folder (best effort)
+                        latest_path = Path(latest_dir)
+                        # Try common folder name first
+                        output_2a = latest_path / "02a-interface_image_analyzer"
+                        if not output_2a.exists():
+                            # Fallback: search
+                            candidates = list(latest_path.glob("**/02a-interface_image_analyzer"))
+                            output_2a = candidates[0] if candidates else None
+                        if output_2a and output_2a.exists():
+                            validator = Path(REPO_ROOT) / "code-netlogo-to-lucim-agentic-workflow" / "validate_2a_widget_output.py"
+                            if validator.exists():
+                                print(f"Running Agent 2a validator on: {output_2a}")
+                                v_exit = subprocess.call([sys.executable, str(validator), "--output-dir", str(output_2a)])
+                                if v_exit == 0:
+                                    print("Agent 2a validation: PASS")
+                                else:
+                                    print("Agent 2a validation: FAIL")
+                                    result["status"] = "FAILED"
+                                    result["exit_code"] = 1
+                            else:
+                                print("Validator script not found; skipping 2a validation")
+                        else:
+                            print("02a output directory not found; skipping 2a validation")
+                    else:
+                        print("Latest orchestrated run dir not found; skipping 2a validation")
+                except Exception as e:
+                    print(f"Agent 2a validation error: {e}")
+            
         except Exception as e:
             result = {
                 "test_case": test_case,
