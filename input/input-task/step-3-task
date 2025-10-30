@@ -1,3 +1,3 @@
 <TASK>
-Synthesize LUCIM environment concepts by mapping AST and state machine to Messir actors and events.
+Using your expertise <PSN-LUCIM-ENVIRONMENT-SYNTHESIZER>, synthesize LUCIM environment model concepts compliant with <LUCIM-DSL-DESCRIPTION> from <ABSTRACT-SYNTAX> and <ABSTRACT-BEHAVIOR>.  The environment model must include a minimum of three actors (excluding System) and a minimum of four output events and a minimum of one input event.
 </TASK>

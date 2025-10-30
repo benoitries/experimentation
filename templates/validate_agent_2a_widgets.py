@@ -97,7 +97,7 @@ def main():
     import sys
     
     if len(sys.argv) != 2:
-        print("Usage: python validate_agent_2a_widgets.py <json_file>")
+        print("Usage: python validate_agent_2a_widgets.py <json-file>")
         sys.exit(1)
     
     file_path = Path(sys.argv[1])

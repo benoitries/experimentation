@@ -6,14 +6,14 @@ Reference Inputs
 - NetLogo case source code: <NETLOGO-SOURCE-CODE>
 - NetLogo interface images: <NETLOGO-INTERFACE-IMAGES>
 - Persona set files:
-  - <PSN_1_NetLogoSyntaxParser> (Agent 1)
-  - <PSN_2a_NetlogoInterfaceImageAnalyzer> (Agent 2a)
-  - <PSN_2b_NetlogoBehaviorExtractor> (Agent 2b)
-  - <PSN_3_LUCIMEnvironmentSynthesizer> (Agent 3)
-  - <PSN_4_LUCIMScenarioSynthesizer> (Agent 4)
-  - <PSN_5_PlantUMLWriter> (Agent 5)
-  - <PSN_6_PlantUMLLUCIMAuditor> (Agent 6 and 8)
-  - <PSN_7_PlantUMLLUCIMCorrector> (Agent 7)
+  - <PSN-NETLOGO-ABSTRACT-SYNTAX-EXTRACTOR> (Agent 1)
+  - <PSN-NETLOGO-INTERFACE-IMAGE-ANALYZER> (Agent 2a)
+  - <PSN-NETLOGO-BEHAVIOR-EXTRACTOR> (Agent 2b)
+  - <PSN-LUCIM-ENVIRONMENT-SYNTHESIZER> (Agent 3)
+  - <PSN-LUCIM-SCENARIO-SYNTHESIZER> (Agent 4)
+  - <PSN-PLANTUML-WRITER> (Agent 5)
+  - <PSN-PLANTUML-LUCIM-AUDITOR> (Agent 6 and 8)
+  - <PSN-PLANTUML-LUCIM-CORRECTOR> (Agent 7)
 - DSL references:
   - IL-SYN: <IL-SYN-DESCRIPTION>, <IL-SYN-MAPPING>
   - IL-SEM: <IL-SEM-DESCRIPTION>, <IL-SEM-MAPPING>
@@ -27,48 +27,48 @@ Canonical Prompt Order (all internal calls)
 
 Natural-Language Orchestration (8 internal stages)
 1) Syntax Parser (Agent 1)
-   - Persona: <PSN_1_NetLogoSyntaxParser>
+   - Persona: <PSN-NETLOGO-ABSTRACT-SYNTAX-EXTRACTOR>
    - Inputs: <IL-SYN-DESCRIPTION> then <IL-SYN-MAPPING>; <NETLOGO-SOURCE-CODE>
    - Output: AST as JSON
 
 2a) Interface Image Analyzer (Agent 2a)
-   - Persona: <PSN_2a_NetlogoInterfaceImageAnalyzer>
+   - Persona: <PSN-NETLOGO-INTERFACE-IMAGE-ANALYZER>
    - Inputs: <NETLOGO-INTERFACE-IMAGES>
    - Output: JSON array of widgets
 
 2b) Behavior Extractor (Agent 2b)
-   - Persona: <PSN_2b_NetlogoBehaviorExtractor>
+   - Persona: <PSN-NETLOGO-BEHAVIOR-EXTRACTOR>
    - Inputs: <NETLOGO-INTERFACE-DESCRIPTION> (output of 2a); <IL-SEM-DESCRIPTION> then <IL-SEM-MAPPING>
-   - Output:  <ABSTRACT_BEHAVIOR_MODEL> as JSON
+   - Output:  <ABSTRACT-BEHAVIOR-MODEL> as JSON
 
 3) LUCIM Environment Synthesizer (Agent 3)
-   - Persona: <PSN_3_LUCIMEnvironmentSynthesizer>
+   - Persona: <PSN-LUCIM-ENVIRONMENT-SYNTHESIZER>
    - Inputs: Step 02 state machine; <LUCIM-RULES>
    - Output: LUCIM environment model as JSON
 
 4) LUCIM Scenario Synthesizer (Agent 4)
-   - Persona: <PSN_4_LUCIMScenarioSynthesizer>
+   - Persona: <PSN-LUCIM-SCENARIO-SYNTHESIZER>
    - Inputs: Step 02 state machine; Step 03 LUCIM concepts; <LUCIM-RULES>
    - Output: LUCIM scenarios as JSON
 
 5) PlantUML Writer (Agent 5)
-   - Persona: <PSN_5_PlantUMLWriter>
+   - Persona: <PSN-PLANTUML-WRITER>
    - Inputs: Step 04 scenarios; <LUCIM-RULES>
    - Output: PlantUML diagram as a standalone diagram artifact
 
 6) PlantUML LUCIM Auditor (Agent 6)
-   - Persona: <PSN_6_PlantUMLLUCIMAuditor>
+   - Persona: <PSN-PLANTUML-LUCIM-AUDITOR>
    - Inputs: Step 05 plantUML diagram artifact; <LUCIM-RULES>
    - Output: Audit report as JSON with verdict and non-compliant rules
 
 7) PlantUML LUCIM Corrector (Agent 7)
-   - Persona: <PSN_7_PlantUMLLUCIMCorrector>
+   - Persona: <PSN-PLANTUML-LUCIM-CORRECTOR>
    - Inputs: Step 05 diagram(s); Step 06 non-compliant rules; <LUCIM-RULES>
    - Output: Corrected diagram as standalone plantUML diagram artifact
 
 8) PlantUML LUCIM Final Auditor (Agent 8)
-   - Persona: <PSN_6_PlantUMLLUCIMAuditor>
-  - Inputs: <PSN_6_PlantUMLLUCIMAuditor>; corrected diagram(s) from Step 07; <LUCIM-RULES>
+  - Persona: <PSN-PLANTUML-LUCIM-AUDITOR>
+  - Inputs: corrected diagram(s) from Step 07; <LUCIM-RULES>
    - Output: Final compliance verdict as JSON
 
 **Output JSON Format**

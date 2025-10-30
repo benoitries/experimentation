@@ -1,3 +1,3 @@
 <TASK>
-Generate a PlantUML sequence diagram from the scenario data following LUCIM compliance rules.
+Using your expertise <PSN-PLANTUML-WRITER>, from the <LUCIM-SCENARIO> generate a PlantUML sequence diagram compliant with the LUCIM DSL description <LUCIM-DSL-DESCRIPTION>.
 </TASK>

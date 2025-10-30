@@ -1,3 +1,3 @@
 <TASK>
-Audit PlantUML diagrams for LUCIM compliance and identify non-compliant rules.
+Using your expertise <PSN-PLANTUML-LUCIM-AUDITOR>, generate an audit report for <PLANTUML-DIAGRAM>, the audit simply reports the compliance verdict and the non-compliant rule, when the verdict is non-compliant.
 </TASK>
