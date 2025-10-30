@@ -109,13 +109,28 @@ def run_with_orchestration_imports(repo_root: str, persona: str, case: Optional[
 def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], model: Optional[str], reasoning: Optional[str], verbosity: Optional[str], output_dir: str) -> int:
     """Run the orchestrated pipeline via subprocess"""
     scripts_path = os.path.join(repo_root, "code-netlogo-to-lucim-agentic-workflow", "scripts")
-    candidate = os.path.join(scripts_path, "run_default_nano.py")
-    
+    # Prefer the generic runner that accepts --model; fallback to nano wrapper
+    candidate_generic = os.path.join(scripts_path, "run_default.py")
+    candidate_nano = os.path.join(scripts_path, "run_default_nano.py")
+
     cmd: List[str]
-    if os.path.exists(candidate):
-        # Use the default nano script
-        python_path = sys.executable
-        cmd = [python_path, candidate]
+    python_path = sys.executable
+    if os.path.exists(candidate_generic):
+        # Use generic script and pass through parameters including --model
+        cmd = [python_path, candidate_generic]
+        if case:
+            cmd.extend(["--base", case])
+        if model:
+            cmd.extend(["--model", model])
+        if persona:
+            cmd.extend(["--persona-set", persona])
+        if reasoning:
+            cmd.extend(["--reasoning", reasoning])
+        if verbosity:
+            cmd.extend(["--verbosity", verbosity])
+    elif os.path.exists(candidate_nano):
+        # Backward compatibility: nano wrapper (no --model support)
+        cmd = [python_path, candidate_nano]
         if case:
             cmd.extend(["--base", case])
         if persona:
@@ -127,7 +142,6 @@ def run_with_orchestration(repo_root: str, persona: str, case: Optional[str], mo
     else:
         # Fallback to orchestrator.py
         orchestrator = os.path.join(repo_root, "code-netlogo-to-lucim-agentic-workflow", "orchestrator.py")
-        python_path = sys.executable
         cmd = [python_path, orchestrator]
         if case:
             cmd.extend(["--case", case])
