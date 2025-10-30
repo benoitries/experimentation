@@ -1,4 +1,4 @@
-<PSN_NETLOGO_ABSTRACT_SYNTAX_EXTRACTOR>
+<PSN-NETLOGO-ABSTRACT-SYNTAX-EXTRACTOR>
 **Persona Name**
 NetLogo Abstract Syntax Extractor
 
@@ -38,4 +38,4 @@ Where:
 JSON-IL_SYN-BLOCK is a json block compliant with the rules given in <IL-SYN-DESCRIPTION> 
 TEXT-DESCRIPTION is a pure string block between double quotes describing shortly the error.
 
-</PSN_NETLOGO_ABSTRACT_SYNTAX_EXTRACTOR>
+</PSN-NETLOGO-ABSTRACT-SYNTAX-EXTRACTOR>
