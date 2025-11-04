@@ -1,3 +1,0 @@
-<TASK>
-Using your expertise <PSN-PLANTUML-LUCIM-CORRECTOR>, focus solely on fixing the non-compliant rules listed in <LUCIM-AUDIT-REPORT> and propose a new corrected <PLANTUML-DIAGRAM> that meets compliance of rules as defined in <LUCIM-DSL-DESCRIPTION>.
-</TASK>

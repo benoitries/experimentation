@@ -120,7 +120,7 @@ Activator bars must never be nested.
 
 <AS11-AB-ORDER>
 For each event, an activator bar must be defined that is always beginning just after the event.
-Activation bars must always be located on the side of the actor lifeline, never on the side of the System.
+Activation bars must always be located on the side of the actor lifeline, never on the side of the System lifeline.
 See <SS2-AB-PLACEMENT-ORDERING> for the normative ordering and placement constraint.
 </AS11-AB-ORDER>
 
@@ -139,7 +139,7 @@ Every message in a LUCIM interaction SHALL connect exactly one Actor lifeline an
 **SS — Activation Bars (AB)**
 
 <SS2-AB-PLACEMENT-ORDERING>
-For each message, if an activation is used, it SHALL occur on the receiving Actor lifeline immediately after the message occurrence. No activations SHALL occur on the System lifeline. The activation SHALL start right after the message and SHALL end before any subsequent message that depends on its completion.
+For each message, if an activation is used, it SHALL occur on the Actor lifeline immediately after the message occurrence. No activations SHALL occur on the System lifeline. The activation SHALL start right after the message and SHALL end before any subsequent message that depends on its completion.
 </SS2-AB-PLACEMENT-ORDERING>
 
 **SS — System (SYS)**
@@ -380,5 +380,9 @@ deactivate actUser
 - Input Event (IE): System→Actor message
 - ExecutionSpecification: UML concept rendered as "activation bar"
 - Lifeline: UML participant in sequence diagram
+
+## 6. Compliance Rules Summary
+
+All rules are normative. Rules start with a placeholder <RULE-ID> and are followed by a description and closed by a placeholder </RULE-ID>. e.g. AS1-SYS-UNIQUE is a rule identifier and the text contained between <AS1-SYS-UNIQUE> and </AS1-SYS-UNIQUE> is the rule description.
 
 </LUCIM-DSL-DESCRIPTION>

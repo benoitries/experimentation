@@ -77,8 +77,10 @@ def _analyze_audit_data(output_dir: str) -> Dict[str, Any]:
             
             audit_metrics["total_combinations"] += 1
             
+            # Support both old ({verdict,...}) and new ({data:{verdict,...}, errors:[]}) schemas
+            node = audit_data.get("data") if isinstance(audit_data, dict) and isinstance(audit_data.get("data"), dict) else audit_data
             # Check if compliant
-            if audit_data.get("verdict") == "compliant":
+            if node.get("verdict") == "compliant":
                 audit_metrics["success_combinations"] += 1
                 # Check if this is a first audit success or after correction
                 if "audit_initial.json" in audit_file:
@@ -92,7 +94,7 @@ def _analyze_audit_data(output_dir: str) -> Dict[str, Any]:
                 audit_metrics["failed_combinations"] += 1
                 
                 # Check for two-step audit (initial non-compliant, then corrected)
-                if "audit_initial.json" in audit_file and audit_data.get("verdict") != "compliant":
+                if "audit_initial.json" in audit_file and node.get("verdict") != "compliant":
                     # Look for corresponding final audit
                     final_audit_file = audit_file.replace("audit_initial.json", "audit_final.json")
                     if os.path.exists(final_audit_file):
@@ -108,8 +110,8 @@ def _analyze_audit_data(output_dir: str) -> Dict[str, Any]:
                         except:
                             pass
             
-            # Count non-compliant rules
-            non_compliant_rules = audit_data.get("non-compliant-rules", [])
+            # Count non-compliant rules (schema-compatible)
+            non_compliant_rules = node.get("non-compliant-rules", [])
             for rule in non_compliant_rules:
                 audit_metrics["non_compliant_rules"][rule] += 1
                 

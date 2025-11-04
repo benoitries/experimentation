@@ -1,3 +1,0 @@
-<TASK>
-Using your expertise <PSN-NetlogoAbstractSyntaxExtractor>, parse the NetLogo code <NETLOGO-SOURCE-CODE> and generate an ABSTRACT-SYNTAX description compliant with <IL-SYN-DESCRIPTION> and <IL-SYN-MAPPING>.
-</TASK>

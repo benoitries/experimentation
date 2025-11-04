@@ -324,6 +324,20 @@ def main() -> int:
         }
     
     
+    # Optional: ask for max_correction (Enter = default 2)
+    try:
+        mc_input = input("Max correction iterations [Enter for 2]: ").strip()
+        if mc_input:
+            mc_val = int(mc_input)
+            if mc_val < 0:
+                raise ValueError("max_correction must be >= 0")
+            os.environ["MAX_CORRECTION"] = str(mc_val)
+        else:
+            os.environ.setdefault("MAX_CORRECTION", "2")
+    except Exception as e:
+        print(f"[WARN] Invalid max_correction input, using default 2 ({e})")
+        os.environ["MAX_CORRECTION"] = "2"
+
     execution_id = compute_execution_id(persona, mode, label)
     print(f"Execution ID: {execution_id}")
     

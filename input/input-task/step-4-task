@@ -1,3 +1,0 @@
-<TASK>
-Using your expertise <PSN-LUCIM-SCENARIO-SYNTHESIZER>, generate one scenario derived from the LUCIM environment model <LUCIM-ENVIRONMENT-MODEL>. The scenario must include a minimum of three actors (excluding System) and a minimum of four output events and a minimum of one input event.
-</TASK>
