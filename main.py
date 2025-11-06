@@ -136,12 +136,28 @@ def choose_advanced_parameters() -> Dict[str, Any]:
         reasoning_levels = [{"effort": "medium", "summary": "auto"}]
     params["reasoning_levels"] = reasoning_levels
     
-    # Text verbosity selection
-    verbosity_levels = ui.select_text_verbosity()
-    if not verbosity_levels:
-        print("No verbosity levels selected, using default")
-        verbosity_levels = ["medium"]
-    params["verbosity_levels"] = verbosity_levels
+    # Verbosity selection: if multiple reasoning levels, pair verbosity to reasoning
+    def _map_reasoning_to_verbosity(effort: str) -> str:
+        if effort in ("minimal", "low"):
+            return "low"
+        if effort == "medium":
+            return "medium"
+        if effort == "high":
+            return "high"
+        return "medium"
+
+    if len(reasoning_levels) > 1:
+        paired_verbosity = [_map_reasoning_to_verbosity(cfg["effort"]) for cfg in reasoning_levels]
+        params["verbosity_levels"] = paired_verbosity
+        params["paired_reasoning_verbosity"] = True
+        print("Verbosity will be auto-paired to reasoning: " + ", ".join(paired_verbosity))
+    else:
+        # Text verbosity selection for single reasoning level
+        verbosity_levels = ui.select_text_verbosity()
+        if not verbosity_levels:
+            print("No verbosity levels selected, using default")
+            verbosity_levels = ["medium"]
+        params["verbosity_levels"] = verbosity_levels
     
     
     return params
@@ -191,9 +207,13 @@ def run_pipeline(mode: str, persona: str, cases: List[str], execution_id: str,
     models = advanced_params.get("models", [DEFAULT_MODEL]) if advanced_params else [DEFAULT_MODEL]
     reasoning_levels = advanced_params.get("reasoning_levels", [{"effort": "medium", "summary": "auto"}]) if advanced_params else [{"effort": "medium", "summary": "auto"}]
     verbosity_levels = advanced_params.get("verbosity_levels", ["medium"]) if advanced_params else ["medium"]
+    paired = bool(advanced_params.get("paired_reasoning_verbosity")) if advanced_params else False
     
     # Calculate total combinations
-    total_combinations = len(models) * len(reasoning_levels) * len(verbosity_levels)
+    if paired and len(reasoning_levels) == len(verbosity_levels):
+        total_combinations = len(models) * len(reasoning_levels)
+    else:
+        total_combinations = len(models) * len(reasoning_levels) * len(verbosity_levels)
     current_combination = 0
     
     print(f"\n{'='*80}")
@@ -210,8 +230,9 @@ def run_pipeline(mode: str, persona: str, cases: List[str], execution_id: str,
     
     # Run all combinations
     for model in models:
-        for reasoning_config in reasoning_levels:
-            for verbosity in verbosity_levels:
+        if paired and len(reasoning_levels) == len(verbosity_levels):
+            for idx, reasoning_config in enumerate(reasoning_levels):
+                verbosity = verbosity_levels[idx]
                 current_combination += 1
                 
                 # Print parameter bundle
@@ -267,6 +288,64 @@ def run_pipeline(mode: str, persona: str, cases: List[str], execution_id: str,
                 # Store results for this combination
                 combination_key = f"{model}_{reasoning_config['effort']}_{verbosity}"
                 results[combination_key] = combination_results
+        else:
+            for reasoning_config in reasoning_levels:
+                for verbosity in verbosity_levels:
+                    current_combination += 1
+                    
+                    # Print parameter bundle
+                    if OrchestratorUI:
+                        ui = OrchestratorUI()
+                        ui.print_combination_header(current_combination, total_combinations)
+                        ui.print_parameter_bundle(
+                            model=model,
+                            base_name=cases[0] if cases else "overall",
+                            reasoning_effort=reasoning_config["effort"],
+                            reasoning_summary=reasoning_config["summary"],
+                            text_verbosity=verbosity
+                        )
+                    else:
+                        print(f"\n{'='*60}")
+                        print(f"COMBINATION {current_combination}/{total_combinations}")
+                        print(f"Model: {model}, Reasoning: {reasoning_config['effort']}, Verbosity: {verbosity}")
+                        print(f"{'='*60}")
+                    
+                    # Run pipelines for this combination
+                    combination_results = {}
+                    
+                    if mode in ["without", "both"]:
+                        print(f"\nRunning without orchestration at {datetime.now().strftime('%H:%M:%S')}")
+                        case = cases[0] if cases else "overall"
+                        exit_code = single_agent_module.run_without_orchestration_imports(
+                            REPO_ROOT, persona, case, model, 
+                            reasoning_config["effort"], verbosity, output_dir
+                        )
+                        combination_results["single_agent"] = {
+                            "exit_code": exit_code, 
+                            "case": case,
+                            "model": model,
+                            "reasoning": reasoning_config,
+                            "verbosity": verbosity
+                        }
+                    
+                    if mode in ["with", "both"]:
+                        print(f"\nRunning with orchestration at {datetime.now().strftime('%H:%M:%S')}")
+                        case = cases[0] if cases else "overall"
+                        exit_code = orchestrated_module.run_with_orchestration_imports(
+                            REPO_ROOT, persona, case, model, 
+                            reasoning_config["effort"], verbosity, output_dir
+                        )
+                        combination_results["orchestrated"] = {
+                            "exit_code": exit_code, 
+                            "case": case,
+                            "model": model,
+                            "reasoning": reasoning_config,
+                            "verbosity": verbosity
+                        }
+                    
+                    # Store results for this combination
+                    combination_key = f"{model}_{reasoning_config['effort']}_{verbosity}"
+                    results[combination_key] = combination_results
     
     return results
 
@@ -324,19 +403,19 @@ def main() -> int:
         }
     
     
-    # Optional: ask for max_correction (Enter = default 2)
+    # Optional: ask for MAX_AUDIT (Enter = default 3)
     try:
-        mc_input = input("Max correction iterations [Enter for 2]: ").strip()
-        if mc_input:
-            mc_val = int(mc_input)
-            if mc_val < 0:
-                raise ValueError("max_correction must be >= 0")
-            os.environ["MAX_CORRECTION"] = str(mc_val)
+        ma_input = input("Max audit iterations (MAX_AUDIT) [Enter for 3]: ").strip()
+        if ma_input:
+            ma_val = int(ma_input)
+            if ma_val < 0:
+                raise ValueError("MAX_AUDIT must be >= 0")
+            os.environ["MAX_AUDIT"] = str(ma_val)
         else:
-            os.environ.setdefault("MAX_CORRECTION", "2")
+            os.environ.setdefault("MAX_AUDIT", "3")
     except Exception as e:
-        print(f"[WARN] Invalid max_correction input, using default 2 ({e})")
-        os.environ["MAX_CORRECTION"] = "2"
+        print(f"[WARN] Invalid MAX_AUDIT input, using default 3 ({e})")
+        os.environ["MAX_AUDIT"] = "3"
 
     execution_id = compute_execution_id(persona, mode, label)
     print(f"Execution ID: {execution_id}")

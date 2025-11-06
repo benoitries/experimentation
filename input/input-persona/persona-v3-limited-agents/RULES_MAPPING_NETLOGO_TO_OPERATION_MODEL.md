@@ -1,17 +1,14 @@
-# ... existing code ...
+
 <MAPPING-NL-LUCIM-OPERATION-MODEL-MAPPING>
 
 ## Mapping Rules: NetLogo → LUCIM Operation Model
 
-This document describes generalized mapping rules for synthesizing a LUCIM Operation Model from NetLogo simulation code. The LUCIM Operation Model must contain sufficient and minimal information to enable generation of execution scenarios (sequences of OE/IE events) that represent NetLogo simulation runs.
+This document describes generalized mapping rules for generating a LUCIM Operation Model from NetLogo simulation code. The LUCIM Operation Model must contain sufficient and minimal information to enable generation of execution scenarios (sequences of OE/IE events) that represent NetLogo simulation runs.
 
 The mapping process transforms NetLogo simulation concepts into external actors, output events (Actor→System), input events (System→Actor), and observable state conditions that trigger input events.
 
 See also:
-- LUCIM DSL definition: `<LUCIM-DSL-DESCRIPTION>`
-- IL-SYN mapping: `<IL-SYN-MAPPING>`
-- IL-SEM mapping: `<IL-SEM-MAPPING>`
-- LUCIM Operation Synthesizer persona: `<PSN-LUCIM-ENVIRONMENT-SYNTHESIZER>`
+- Rules for the LUCIM Operation Model: `<RULES-LUCIM-OPERATION-MODEL>`
 
 ---
 
@@ -21,25 +18,24 @@ See also:
 
 **Rule SYS-1: System Represents Entire Simulation**
 - The entire NetLogo model (all procedures, state, rules) maps to the LUCIM **System**.
-- All breeds, patches, links, and globals are internal to the System unless they represent external roles.
+- NetLogo agents (breeds, patches, links) are modeled as LUCIM actors with a 1:1 mapping per ACT-1; the System encapsulates internal logic and state transitions between these interactions.
 - The System encapsulates all simulation logic and state transitions.
 
 ### 1.2 Actors (LUCIM)
 
-**Rule ACT-1: Actors Are External Roles Only**
-- **DO NOT** directly map NetLogo breeds to LUCIM actors.
-- Breeds, patches, and links are typically internal entities managed by the System.
-- Actors represent **external roles** that trigger or receive events.
+**Rule ACT-1: 1:1 Mapping with NetLogo Agents**
+- Directly map NetLogo agents to LUCIM actors with a 1:1 correspondence.
+- Agents include breeds (turtles), patches, links, and any domain-specific agent sets used in the code.
+- Preserve traceability by recording the original NetLogo agent names.
 
-**Rule ACT-2: Identify External Roles**
-Identify actors based on **external sources of change**:
-- **ActClock / ActActivator**: Temporal triggers (ticks, scheduled events, calendar changes)
-- **ActEnvironment / ActSensor**: Natural phenomena or external sensor inputs (rain, temperature, stochastic events)
-- **ActUser / ActAdministrator**: Human-initiated actions (installation, configuration, manual triggers)
-- **ActMsrCreator**: System initialization and environment creation
-- **ActStakeholder**: Domain-specific external roles (e.g., ActEcologist, ActTownHall)
+**Rule ACT-2: Always Include End-User Actor**
+- Always add an additional actor named `ActEndUser` representing the human end user.
+- `ActEndUser` captures user-facing notifications and interactions that are observable at the boundary.
 
-**Rule ACT-3: Each Actor Must Have Goals**
+**Rule ACT-3: Actor Catalog May Also Include Common Roles**
+- As needed, include common roles such as `ActClock`, `ActAdministrator`, but this does not replace the required 1:1 mapping with NetLogo agents.
+
+**Rule ACT-4: Each Actor Must Have Goals**
 - Every actor must have at least one explicit goal that justifies its existence.
 - Goals describe why the actor interacts with the System (e.g., "Drive time progression", "Provide natural stimuli").
 
@@ -125,16 +121,16 @@ Identify actors based on **external sources of change**:
 | Intensity/amount variables | OE/IE parameters | `rainIntensity`, `rainAmount` |
 | Configuration constants | OE parameters, initialization | `initialYear`, `electionPeriod` |
 
-### 2.3 NetLogo Breeds → System Entities (NOT Actors)
+### 2.3 NetLogo Agents → LUCIM Actors (1:1)
 
-| NetLogo Breed | LUCIM Treatment |
-|---------------|-----------------|
-| Agent breeds (`turtles`, `links`) | Internal System entities |
-| Environmental entities (`trees`, `plants`) | Part of System state |
-| Ephemeral entities (`raindrops`, `waves`) | System-managed transient state |
-| Infrastructure (`hpcs`) | System state resulting from actor actions |
+| NetLogo Agent Kind | LUCIM Treatment |
+|--------------------|-----------------|
+| Breeds (`turtles` and domain-specific breeds) | Map 1:1 to actor types |
+| `patches` | Map 1:1 to an actor type representing patch-level behavior |
+| `links` | Map 1:1 to an actor type representing link interactions |
+| Observer/domain globals controlling agents | Represented as actors when modeled as agent-like controllers |
 
-**Note**: Breeds do NOT become actors. Actors are identified from external roles that interact with the System.
+**Note**: In addition to the 1:1 mapping above, always add the end-user actor `ActEndUser`.
 
 ### 2.4 Conditional Logic → IE Conditions
 
@@ -245,9 +241,15 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
 
 ### 5.1 Actors Identified
 
-- **ActClock**: Temporal management (date progression, election scheduling)
-- **ActEnvironment**: Natural phenomena (rain simulation, river monitoring)
-- **ActAdministrator**: Infrastructure installation (HPC installation)
+- 1:1 mapped actors from NetLogo agents (illustrative):
+  - **ActBreedCitizen** (from breed `citizens`)
+  - **ActPatches** (from `patches`)
+  - **ActRoadLinks** (from link-breed `roads`)
+- Additional common roles as needed:
+  - **ActClock**: Temporal management (date progression, election scheduling)
+  - **ActAdministrator**: Infrastructure installation (HPC installation)
+- Mandatory end-user actor:
+  - **ActEndUser**: Human end user receiving notifications and initiating user actions
 
 ### 5.2 Output Events (OE)
 
@@ -257,6 +259,7 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
 | `oeAdvanceTick` | `ActClock` | `go` (tick advancement) | (none) |
 | `oeSimulateRain` | `ActEnvironment` | `simulate-event-rain` | `intensity`, `amount` |
 | `oeInstallHpc` | `ActAdministrator` | `install-hpc` | `x`, `y` |
+| `oeRequestAction` | `ActEndUser` | `user-action` | `actionName`, `payload` |
 
 ### 5.3 Input Events (IE)
 
@@ -268,6 +271,7 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
 | `ieRiverDrought` | `ActEnvironment` | `simulate-river-level-decrease` (when level < 500) | `currentLevel` |
 | `ieHpcInstalled` | `ActAdministrator` | `install-hpc` (completion) | `x`, `y`, `treesCut` |
 | `ieForestCut` | `ActAdministrator` | `install-hpc` (side effect) | `treesBefore`, `treesAfter` |
+| `ieNotifyUser` | `ActEndUser` | observable alerts/confirmations | `message`, `severity` |
 
 ### 5.4 Observables
 
@@ -294,15 +298,17 @@ ActClock: each tick → oeAdvanceTick()
 ActClock: date change → oeSetClock(dateString: dateString)
 ActEnvironment: stochastic (50% chance) → oeSimulateRain(intensity: random, amount: based on intensity)
 ActAdministrator: explicit call → oeInstallHpc(x: random, y: random)
+ActEndUser: explicit UI action → oeRequestAction(actionName: from UI, payload: context)
 ```
 
 ---
 
 ## 6. Validation Checklist
 
-Before finalizing the LUCIM Environment Model, verify:
+Before finalizing the LUCIM Operation Model, verify:
 
-- [ ] All actors are external roles (not breeds/patches)
+- [ ] All NetLogo agents are mapped 1:1 to LUCIM actors
+- [ ] The end-user actor `ActEndUser` is present
 - [ ] Each actor has at least one explicit goal
 - [ ] All events are Actor→System (OE) or System→Actor (IE)
 - [ ] No Actor↔Actor or System↔System events
@@ -335,5 +341,5 @@ With these elements, a scenario generator can:
 
 ---
 
-</NL-LUCIM-ENV-MAPPING>
-# ... existing code ...
+</MAPPING-NL-LUCIM-OPERATION-MODEL-MAPPING>
+
