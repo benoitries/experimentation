@@ -31,11 +31,11 @@ The following mapping is used to map the LUCIM DSL abstract syntax concepts to t
 - LUCIM Event Parameter (EP) → UML ValueSpecification(s): ordered arguments on Messages
 
 
-## Valid JSON format
+## Valid PlantUML format
 
-<LDR0-JSON-BLOCK-ONLY>
-The PlantUML Diagram <PLANTUML-DIAGRAM> must be a solely a JSON block. <PLANTUML-DIAGRAM> must not include Markdown code fences or any text outside the JSON object. Solution is to remove the markdown code fences and any text outside the JSON object.
-</LDR0-JSON-BLOCK-ONLY>
+<LDR0-PLANTUML-BLOCK-ONLY>
+The PlantUML Diagram <PLANTUML-DIAGRAM> must be a solely plantuml block. <PLANTUML-DIAGRAM> must not include Markdown code fences or any text outside the plantuml object. Solution is to remove the markdown code fences and any text outside the plantuml object.
+</LDR0-PLANTUML-BLOCK-ONLY>
 
 
 ## Quantitative Rules

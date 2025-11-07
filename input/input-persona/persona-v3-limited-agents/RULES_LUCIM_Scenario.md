@@ -70,7 +70,6 @@ All actor instance names must be consistent with the actor type names defined in
 Example: actAdministrator for an ActAdministrator type, chris for an ActEcologist type, joe for an ActUser type, theClock for an ActClock type, anEcologist for an ActEcologist type.
 </LSC13-ACTOR-INSTANCE-CONSISTENCY>
 
-
 <LSC14-INPUT-EVENT-NAME-CONSISTENCY>
 Input event names must be stricly the same names as defined in <LUCIM-OPERATION-MODEL>.
 </LSC14-INPUT-EVENT-NAME-CONSISTENCY>
@@ -80,7 +79,8 @@ Output event names must be stricly the same names as defined in <LUCIM-OPERATION
 </LSC15-OUTPUT-EVENT-NAME-CONSISTENCY>
 
 <LSC16-ACTORS-PERSISTENCE>
-The scenario must contain solely actors as defined in <LUCIM-OPERATION-MODEL>. Actors types must be persistent. Do not invent new actor types.
+The scenario must contain solely actors types as defined in <LUCIM-OPERATION-MODEL>. Actors types must be persistent. Do not invent new actor types.
+Note that actor instances are not persistent, because they are not defined <LUCIM-OPERATION-MODEL>.
 </LSC16-ACTORS-PERSISTENCE>
 
 <LSC17-EVENTS-PERSISTENCE>

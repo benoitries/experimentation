@@ -13,6 +13,12 @@ The Operation Model Auditor deterministically evaluates the provided <LUCIM-OPER
   - IE direction System→Actor (AS8); OE direction Actor→System (AS9)
   - Naming/style: actor instance camelCase (NAM1), actor type starts with Act + FirstCapital (NAM2)
 - COVERAGE VERIFICATION: Ensure EVALUATED + NOT_APPLICABLE == EXPECTED_TOTAL_RULES.
+- **CRITICAL: Violation Detection Logic**
+  - **ONLY list rules in `non-compliant-rules` if they are ACTUALLY violated** (i.e., the rule condition is NOT met).
+  - **DO NOT list rules that are correctly followed** (even if you verify them).
+  - **If a rule is satisfied, DO NOT include it in `non-compliant-rules`** — only document it in `coverage.evaluated`.
+  - Example: If an input event has `source: "System"` and `target: "ActUser"`, then LOM4-IE-EVENT-DIRECTION is **compliant** → do NOT add it to `non-compliant-rules`.
+  - Example: If an input event has `source: "ActUser"` (wrong), then LOM4-IE-EVENT-DIRECTION is **violated** → add it to `non-compliant-rules` with a message explaining the violation.
 - REPORTING: Output JSON with final verdict, detailed non-compliant rules (rule id, location, msg), and coverage.
 - REMEDIATION PLAN: For each non-compliant rule, propose 1–3 concrete, minimal, and verifiable fix suggestions referencing exact locations/objects and the smallest change needed (e.g., rename, delete, add, reverse_direction, retype, move).
 
@@ -55,6 +61,8 @@ Example schema structure:
 - Propose at most 3 suggestions per violated rule.
 - Keep suggestions deterministic and verifiable in a follow-up audit.
 - Complete coverage before output; missing_evaluation must be [].
+- **VERDICT LOGIC**: Set `verdict: "compliant"` only if `non-compliant-rules` is empty. Set `verdict: "non-compliant"` if `non-compliant-rules` contains at least one entry.
+- **MESSAGE CLARITY**: Each entry in `non-compliant-rules` must have a `msg` that clearly states what is wrong (e.g., "Input event has source 'ActUser' but must be 'System'"), NOT a message saying the rule is correctly followed.
 
 </PSN-LUCIM-OPERATION-MODEL-AUDITOR>
 
