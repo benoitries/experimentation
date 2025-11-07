@@ -2,9 +2,6 @@
 
 # LUCIM Scenario Rules (strict)
 
-
-
-
 ## Valid JSON format
 
 <LSC0-JSON-BLOCK-ONLY>
@@ -14,53 +11,82 @@ The Scenario <SCENARIO> must be a solely a  JSON block. <SCENARIO> must not incl
 
 ## Quantitative Rules
 
+<LSC2-ACTORS-LIMITATION>
+There must be at most *five* actors in the scenario.
+</LSC2-ACTORS-LIMITATION>
 
-## Ordering Rules
+<LSC3-INPUT-EVENTS-LIMITATION>
+There must be *at least one input event* to each actor in the scenario.
+</LSC3-INPUT-EVENTS-LIMITATION>
+
+<LSC4-OUTPUT-EVENTS-LIMITATION>
+There must be *at least one output event* from each actor in the scenario.
+</LSC4-OUTPUT-EVENTS-LIMITATION>
+
+## Temporal Rules
+
+<LSC5-EVENT-SEQUENCE>
+The sequence of events must be compliant with the conditions defined in the <LUCIM-OPERATION-MODEL>. preF, preP, postF.
+</LSC5-EVENT-SEQUENCE>
+
+<LSC6-PARAMETERS-VALUE>
+The parameters of the events must be valid with respect to the conditions defined in the <LUCIM-OPERATION-MODEL> and to the sequence of events. The parameters must be of the same type as defined in the <LUCIM-OPERATION-MODEL>.
+</LSC6-PARAMETERS-VALUE>
 
 
 ## Message Flow Constraints
 
-<LSC3-SYS-ACT-ALLOWED-EVENTS>
-Events must always be from System (resp. Actor) to an Actor (resp. the System). System → Actor or Actor → System
-</LSC3-SYS-ACT-ALLOWED-EVENTS>
-
-<LSC4-SYS-NO-SELF-LOOP>
+<LSC7-SYSTEM-NO-SELF-LOOP>
 Events must never be from System to System. System → System
-</LSC4-SYS-NO-SELF-LOOP>
+</LSC7-SYSTEM-NO-SELF-LOOP>
 
-<LSC6-ACT-NO-ACT-ACT-EVENTS>
+<LSC8-ACTOR-NO-SELF-LOOP>
 Events must never be from Actor to Actor. Actor → Actor
-Canonical semantics for message directionality is specified in <SS1-MESSAGE-DIRECTIONALITY>.
-</LSC6-ACT-NO-ACT-ACT-EVENTS>
+</LSC8-ACTOR-NO-SELF-LOOP>
 
-<LSC3-SYS-ACT-ALLOWED-EVENTS>
-Events must always be from System (resp. Actor) to an Actor (resp. the System). System → Actor or Actor → System
-Canonical semantics for message directionality is specified in <SS1-MESSAGE-DIRECTIONALITY>.
-</LSC3-SYS-ACT-ALLOWED-EVENTS>
+<LSC9-INPUT-EVENT-ALLOWED-EVENTS>
+Input events must always be from the System to Actors. System → Actor.
+</LSC9-INPUT-EVENT-ALLOWED-EVENTS>
 
-<LSC4-SYS-NO-SELF-LOOP>
-Events must never be from System to System. System → System
-Canonical semantics for message directionality is specified in <SS1-MESSAGE-DIRECTIONALITY>.
-</LSC4-SYS-NO-SELF-LOOP>
+<LSC10-OUTPUT-EVENT-DIRECTION>
+Output events must always be from Actors to the System. Actor → System.
+</LSC10-OUTPUT-EVENT-DIRECTION>
 
-<LSC6-ACT-NO-ACT-ACT-EVENTS>
-Events must never be from Actor to Actor. Actor → Actor
-Canonical semantics for message directionality is specified in <SS1-MESSAGE-DIRECTIONALITY>.
-</LSC6-ACT-NO-ACT-ACT-EVENTS>
+## Naming Conventions Rules
 
-## Consistency Constraints
+<LSC11-ACTOR-INSTANCE-FORMAT>
+All actor instance names must be human-readable in camelCase.
+Example: actAdministrator, chris, theClock, anEcologist.
+</LSC11-ACTOR-INSTANCE-FORMAT>
 
-<LSC1-ACT-NAME-CONSISTENCY>
-Actor names must be stricly the same names as defined in <LUCIM-OPERATION-MODEL>.
-</LSC1-ACT-NAME-CONSISTENCY>
+## Naming Consistency Constraints
 
-<LSC2-EVENT-NAME-CONSISTENCY>
-Event names must be stricly the same names as defined in <LUCIM-OPERATION-MODEL>.
-</LSC2-EVENT-NAME-CONSISTENCY>
+<LSC12-ACTOR-TYPE-NAME-CONSISTENCY>
+Actor type names must be stricly the same type names as defined in <LUCIM-OPERATION-MODEL>.
+</LSC12-ACTOR-TYPE-NAME-CONSISTENCY>
 
-<LSC3-ACT-NAME-CONSISTENCY>
-The scenario must contain solely actors and events as defined in <LUCIM-OPERATION-MODEL>.
-</LSC3-ACT-NAME-CONSISTENCY>
+<LSC13-ACTOR-INSTANCE-CONSISTENCY>
+All actor instance names must be consistent with the actor type names defined in <LUCIM-OPERATION-MODEL>.
+Example: actAdministrator for an ActAdministrator type, chris for an ActEcologist type, joe for an ActUser type, theClock for an ActClock type, anEcologist for an ActEcologist type.
+</LSC13-ACTOR-INSTANCE-CONSISTENCY>
+
+
+<LSC14-INPUT-EVENT-NAME-CONSISTENCY>
+Input event names must be stricly the same names as defined in <LUCIM-OPERATION-MODEL>.
+</LSC14-INPUT-EVENT-NAME-CONSISTENCY>
+
+<LSC15-OUTPUT-EVENT-NAME-CONSISTENCY>
+Output event names must be stricly the same names as defined in <LUCIM-OPERATION-MODEL>.
+</LSC15-OUTPUT-EVENT-NAME-CONSISTENCY>
+
+<LSC16-ACTORS-PERSISTENCE>
+The scenario must contain solely actors as defined in <LUCIM-OPERATION-MODEL>. Actors types must be persistent. Do not invent new actor types.
+</LSC16-ACTORS-PERSISTENCE>
+
+<LSC17-EVENTS-PERSISTENCE>
+The scenario must contain solely events as defined in <LUCIM-OPERATION-MODEL>. Events must be persistent. Do not invent new event names.
+</LSC17-EVENTS-PERSISTENCE>
+
 
 ## Glossary
 
@@ -74,6 +100,6 @@ The scenario must contain solely actors and events as defined in <LUCIM-OPERATIO
 
 ## Summary of Rules
 
-All rules are normative. Rules start with a placeholder <RULE-ID> and are followed by a description and closed by a placeholder </RULE-ID>. e.g. LSC1-SYS-UNIQUE is a rule identifier and the text contained between <LSC1-SYS-UNIQUE> and </LSC1-SYS-UNIQUE> is the rule description.
+All rules are normative. Rules start with a placeholder <RULE-ID> and are followed by a description and closed by a placeholder </RULE-ID>. e.g. LSC1-ACTOR-INSTANCE-FORMAT is a rule identifier and the text contained between <LSC1-ACTOR-INSTANCE-FORMAT> and </LSC1-ACTOR-INSTANCE-FORMAT> is the rule description.
 
 </RULES-LUCIM-SCENARIO>

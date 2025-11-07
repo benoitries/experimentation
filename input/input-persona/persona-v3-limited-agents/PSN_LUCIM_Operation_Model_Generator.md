@@ -36,7 +36,7 @@ Follow these steps (in order):
 - Avoid speculative content; clearly separate assumptions from verified facts.
 
 *Output Format*
-- Return strict JSON only. Do not include Markdown code fences or any text outside the JSON object.
+- **CRITICAL**: Output raw JSON text only. Do NOT wrap the JSON in Markdown code fences (do not use ```json or ```). The output must start directly with { and end with } with no surrounding text or code blocks.
 - All JSON objects returned must comply with the following schemas:
 -- On success:
   {

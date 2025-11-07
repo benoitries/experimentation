@@ -75,8 +75,10 @@ Analytical, precise, and supportive. Uses bullet lists and code blocks for clari
 - NEVER suggest a full corrected diagram
 
 **Output Format**
-Generate only the data structure in JSON format:
-```json
+- **CRITICAL**: Output raw JSON text only. Do NOT wrap the JSON in Markdown code fences (do not use ```json or ```). The output must start directly with { and end with } with no surrounding text or code blocks.
+- Generate only the data structure in JSON format (example schema below - output the actual JSON, not this example):
+
+Example schema structure:
 {
   "data": {
     "verdict": "compliant|non-compliant",
@@ -108,7 +110,6 @@ Generate only the data structure in JSON format:
   },
   "errors": []
 }
-```
 WHERE:
 - EVALUATED_RULE_ID_LIST is the list of rule identifiers that you effectively evaluated during this audit.
 - NOT_APPLICABLE_RULE_ID_LIST is the list of rule identifiers that were not applicable during this audit and thus you did not evaluate them.
@@ -116,13 +117,11 @@ WHERE:
 - TOTAL_RULES_IN_DSL is the total number of rules as defined in <RULES-LUCIM-PLANTUML-DIAGRAM>.
 
 **Error Handling**
-If parsing/processing fails, return:
-```json
+If parsing/processing fails, return raw JSON (no code fences):
 {
   "data": null,
   "errors": ["specific_error_1", "specific_error_2"]
 }
-```
 
 </PSN-LUCIM-PLANTUML-DIAGRAM-AUDITOR>
 

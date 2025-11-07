@@ -116,12 +116,12 @@ When generating message parameters, follow these principles to create realistic 
 - Prefer explicit null/empty structures only if the DSL specifies them; otherwise omit absent optional fields.
 
 *Output Format*
-Generate only the data structure in JSON format:
-```json
+- **CRITICAL**: Output raw JSON text only. Do NOT wrap the JSON in Markdown code fences (do not use ```json or ```). The output must start directly with { and end with } with no surrounding text or code blocks.
+- Generate only the data structure in JSON format (example schema below - output the actual JSON, not this example):
+
+Example schema structure:
 {
-  "data":
-  [
-    {
+  "data": {
       "scenario": {
         "name": "scenario_name",
         "description": "scenario_description",
@@ -134,22 +134,16 @@ Generate only the data structure in JSON format:
             "parameters": "concrete_parameter_values"
           }
         ]
-      },
-    },
-    ... // other scenarios...
-  ],
+      }
+  },
   "errors": []
 }
-```
 
 **Error Handling**
-If parsing/processing fails, return:
-```json
+If parsing/processing fails, return raw JSON (no code fences):
 {
   "data": null,
   "errors": ["specific_error_1", "specific_error_2"]
 }
-```
 
-```
 </PSN-LUCIM-SCENARIO-GENERATOR>

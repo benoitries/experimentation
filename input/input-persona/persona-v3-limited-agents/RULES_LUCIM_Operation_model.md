@@ -6,7 +6,7 @@
 ## Valid JSON format
 
 <LOM0-JSON-BLOCK-ONLY>
-The Operation Model <OPERATION-MODEL> must be a solely a  JSON block. <OPERATION-MODEL> must not include Markdown code fences or any text outside the JSON object.
+The Operation Model <OPERATION-MODEL> must be a solely a  JSON block. <OPERATION-MODEL> must not include Markdown code fences or any text outside the JSON object. Solution is to remove the code fences and any text outside the JSON object.
 </LOM0-JSON-BLOCK-ONLY>
 
 ## Naming Rules
@@ -17,10 +17,6 @@ Example 1 : ActMsrCreator
 Example 2 : ActEcologist
 </LOM1-ACT-TYPE-FORMAT>
 
-<LOM2-ACT-INSTANCE-FORMAT>
-All actor instance names must be human-readable, in camelCase.
-Example: actAdministrator, chris, joe, theClock, anEcologist.
-</LOM2-ACT-INSTANCE-FORMAT>
 
 <LOM2-IE-EVENT-NAME-FORMAT>
 All input event names must be human-readable, in camelCase.
