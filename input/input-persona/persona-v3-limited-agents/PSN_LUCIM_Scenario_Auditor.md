@@ -48,7 +48,7 @@ Example schema structure:
       "total_rules_in_dsl": "EXPECTED_TOTAL_RULES_AS_STRING"
     }
   },
-  "errors": []
+  "errors": null
 }
 
 **Constraints**
@@ -59,6 +59,16 @@ Example schema structure:
 - Complete coverage before final output; missing_evaluation must be [].
 - **VERDICT LOGIC**: Set `verdict: "compliant"` only if `non-compliant-rules` is empty. Set `verdict: "non-compliant"` if `non-compliant-rules` contains at least one entry.
 - **MESSAGE CLARITY**: Each entry in `non-compliant-rules` must have a `msg` that clearly states what is wrong (e.g., "Input event has source 'ActUser' but must be 'System'"), NOT a message saying the rule is correctly followed.
+
+
+**Error Handling**
+If parsing/processing fails, return raw JSON (no code fences):
+{
+  "data": null,
+  "errors": ["specific_error_1", "specific_error_2"]
+}
+
+
 
 </PSN-LUCIM-SCENARIO-AUDITOR>
 

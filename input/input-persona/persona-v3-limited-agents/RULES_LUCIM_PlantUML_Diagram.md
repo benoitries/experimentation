@@ -169,6 +169,20 @@ Example: alex -> system : oeConstructionRequest("hpc")
 </LDR26-OUTPUT-EVENT-SYNTAX>
 
 
+## Naming Conventions Rules
+
+
+<LDR27-ACTOR-INSTANCE-FORMAT>
+All actor instance names must be human-readable in camelCase.
+Example: actAdministrator, chris, theClock, anEcologist.
+</LDR27-ACTOR-INSTANCE-FORMAT>
+
+<LDR28-ACTOR-INSTANCE-NAME-CONSISTENCY>
+All actor instance names must be consistent with the actor type names defined in <LUCIM-OPERATION-MODEL> and <LUCIM-SCENARIO>.
+Example: actAdministrator for an ActAdministrator type, chris for an ActEcologist type, joe for an ActUser type, theClock for an ActClock type, anEcologist for an ActEcologist type.
+</LDR28-ACTOR-INSTANCE-NAME-CONSISTENCY>
+
+
 ### Informative Examples and Counter-examples
 
 #### Valid LUCIM PlantUML diagram

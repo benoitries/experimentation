@@ -52,23 +52,11 @@ Input events must always be from the System to Actors. System → Actor.
 Output events must always be from Actors to the System. Actor → System.
 </LSC10-OUTPUT-EVENT-DIRECTION>
 
-## Naming Conventions Rules
-
-<LSC11-ACTOR-INSTANCE-FORMAT>
-All actor instance names must be human-readable in camelCase.
-Example: actAdministrator, chris, theClock, anEcologist.
-</LSC11-ACTOR-INSTANCE-FORMAT>
-
 ## Naming Consistency Constraints
 
 <LSC12-ACTOR-TYPE-NAME-CONSISTENCY>
 Actor type names must be stricly the same type names as defined in <LUCIM-OPERATION-MODEL>.
 </LSC12-ACTOR-TYPE-NAME-CONSISTENCY>
-
-<LSC13-ACTOR-INSTANCE-CONSISTENCY>
-All actor instance names must be consistent with the actor type names defined in <LUCIM-OPERATION-MODEL>.
-Example: actAdministrator for an ActAdministrator type, chris for an ActEcologist type, joe for an ActUser type, theClock for an ActClock type, anEcologist for an ActEcologist type.
-</LSC13-ACTOR-INSTANCE-CONSISTENCY>
 
 <LSC14-INPUT-EVENT-NAME-CONSISTENCY>
 Input event names must be stricly the same names as defined in <LUCIM-OPERATION-MODEL>.

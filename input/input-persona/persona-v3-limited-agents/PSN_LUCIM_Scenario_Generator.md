@@ -136,7 +136,7 @@ Example schema structure:
         ]
       }
   },
-  "errors": []
+  "errors": null
 }
 
 **Error Handling**
