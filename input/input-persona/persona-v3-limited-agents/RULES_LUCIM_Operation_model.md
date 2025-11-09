@@ -54,6 +54,16 @@ Validation:
 - preF/preP: present, arrays are present and may be empty.
 </LOM7-CONDITIONS-VALIDATION>
 
+## Quantitative Rules
+
+<LOM8-INPUT-EVENTS-LIMITATION>
+Each actor must have *at least one input event* in the operation model.
+</LOM8-INPUT-EVENTS-LIMITATION>
+
+<LOM9-OUTPUT-EVENTS-LIMITATION>
+Each actor must have *at least one output event* in the operation model.
+</LOM9-OUTPUT-EVENTS-LIMITATION>
+
 
 ## Glossary
 

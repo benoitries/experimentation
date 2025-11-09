@@ -146,7 +146,7 @@ See also:
 
 The LUCIM Operation Model must contain **sufficient and minimal** information to generate execution scenarios. The following structure enables scenario generation:
 
-```json
+
 {
   "system": {
     "name": "System"
@@ -188,7 +188,7 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
     "events": { "oeEventName": ["netlogo-procedure"], "ieEventName": ["netlogo-rule"] }
   }
 }
-```
+
 
 ### 3.1 Elements Required for Scenario Generation
 
@@ -220,7 +220,7 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
 
 1. **Temporal Actor**: If the model has time progression, scheduled events, or calendar logic → `ActClock` or `ActActivator`
 2. **Environmental Actor**: If the model has stochastic natural phenomena, weather, or external sensor inputs → `ActEnvironment` or `ActSensor`
-3. **User Actor**: If the model has manual initialization, installation, or configuration → `ActAdministrator` or `ActUser`
+3. **User Actor**: If the model has manual initialization, installation, or configuration → `ActAdministrator` or `ActUser`. These user actors are typically responsible for initiating actions or responding to external triggers. They are not actors responsible for the system's internal logic.
 4. **Domain Actor**: If the model has domain-specific external stakeholders → `Act<DomainRole>` (e.g., `ActEcologist`, `ActTownHall`)
 
 ### 4.2 Event Derivation Heuristics
@@ -245,9 +245,9 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
   - **ActBreedCitizen** (from breed `citizens`)
   - **ActPatches** (from `patches`)
   - **ActRoadLinks** (from link-breed `roads`)
+  - **ActHPCInstaller**: Infrastructure installation (HPC installation)
 - Additional common roles as needed:
   - **ActClock**: Temporal management (date progression, election scheduling)
-  - **ActAdministrator**: Infrastructure installation (HPC installation)
 - Mandatory end-user actor:
   - **ActEndUser**: Human end user receiving notifications and initiating user actions
 
@@ -258,7 +258,7 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
 | `oeSetClock` | `ActClock` | `compute-today` | `dateString` |
 | `oeAdvanceTick` | `ActClock` | `go` (tick advancement) | (none) |
 | `oeSimulateRain` | `ActEnvironment` | `simulate-event-rain` | `intensity`, `amount` |
-| `oeInstallHpc` | `ActAdministrator` | `install-hpc` | `x`, `y` |
+| `oeInstallHpc` | `ActHPCInstaller` | `install-hpc` | `x`, `y` |
 | `oeRequestAction` | `ActEndUser` | `user-action` | `actionName`, `payload` |
 
 ### 5.3 Input Events (IE)
@@ -269,8 +269,8 @@ The LUCIM Operation Model must contain **sufficient and minimal** information to
 | `ieRainExtreme` | `ActEnvironment` | `simulate-event-rain` (when intensity = "extreme") | `intensity` |
 | `ieRiverFlood` | `ActEnvironment` | `simulate-river-level-decrease` (when level > 2500) | `currentLevel` |
 | `ieRiverDrought` | `ActEnvironment` | `simulate-river-level-decrease` (when level < 500) | `currentLevel` |
-| `ieHpcInstalled` | `ActAdministrator` | `install-hpc` (completion) | `x`, `y`, `treesCut` |
-| `ieForestCut` | `ActAdministrator` | `install-hpc` (side effect) | `treesBefore`, `treesAfter` |
+| `ieHpcInstalled` | `ActHPCInstaller` | `install-hpc` (completion) | `x`, `y`, `treesCut` |
+| `ieForestCut` | `ActHPCInstaller` | `install-hpc` (side effect) | `treesBefore`, `treesAfter` |
 | `ieNotifyUser` | `ActEndUser` | observable alerts/confirmations | `message`, `severity` |
 
 ### 5.4 Observables
@@ -297,7 +297,7 @@ if electionCountdown <= 0 → emit ieElectionDay(dateString: dateString)
 ActClock: each tick → oeAdvanceTick()
 ActClock: date change → oeSetClock(dateString: dateString)
 ActEnvironment: stochastic (50% chance) → oeSimulateRain(intensity: random, amount: based on intensity)
-ActAdministrator: explicit call → oeInstallHpc(x: random, y: random)
+ActHPCInstaller: explicit call → oeInstallHpc(x: random, y: random)
 ActEndUser: explicit UI action → oeRequestAction(actionName: from UI, payload: context)
 ```
 
