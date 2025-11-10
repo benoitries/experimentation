@@ -123,9 +123,9 @@ Example 2: participant "chris:ActEcologist" as chris
 A LUCIM use case instance must be represented as a UML Sequence Diagram using strictly PlantUML textual syntax.
 </LDR18-DIAGRAM-LUCIM-REPRESENTATION>
 
-<LDR19-DIAGRAM-ALLOW-BLANK-LINES>
-In PlantUML diagrams, blank lines are allowed and must be ignored.
-</LDR19-DIAGRAM-ALLOW-BLANK-LINES>
+<LDR19-DIAGRAM-ALLOW-BLANK-LINES-AND-COMMENTS>
+In PlantUML diagrams, blank lines and comments are allowed and must be ignored.
+</LDR19-DIAGRAM-ALLOW-BLANK-LINES-AND-COMMENTS>
 
 <LDR20-ACTIVATION-BAR-SEQUENCE>
 Strictly follow this sequence of instructions for activation bars declarations:
