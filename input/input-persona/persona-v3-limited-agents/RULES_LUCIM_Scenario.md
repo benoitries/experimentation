@@ -16,21 +16,21 @@ There must be at most *five* actors in the scenario.
 </LSC2-ACTORS-LIMITATION>
 
 <LSC3-INPUT-EVENTS-LIMITATION>
-There must be *at least one input event* to each actor in the scenario.
+Each actor must have *at least one input event* in the scenario.
 </LSC3-INPUT-EVENTS-LIMITATION>
 
 <LSC4-OUTPUT-EVENTS-LIMITATION>
-There must be *at least one output event* from each actor in the scenario.
+Each actor must have *at least one output event* in the scenario.
 </LSC4-OUTPUT-EVENTS-LIMITATION>
 
 ## Temporal Rules
 
 <LSC5-EVENT-SEQUENCE>
-The sequence of events must be compliant with the conditions defined in the <LUCIM-OPERATION-MODEL>. preF, preP, postF.
+The sequence of events must be compliant with the conditions preF, preP, postF defined in the <LUCIM-OPERATION-MODEL>.
 </LSC5-EVENT-SEQUENCE>
 
 <LSC6-PARAMETERS-VALUE>
-The parameters of the events must be valid with respect to the conditions defined in the <LUCIM-OPERATION-MODEL> and to the sequence of events. The parameters must be of the same type as defined in the <LUCIM-OPERATION-MODEL>.
+The parameters of the events must be valid with respect to the conditions preF, preP, postF defined in the <LUCIM-OPERATION-MODEL> and to the sequence of events. The parameters must be of the same type as defined in the <LUCIM-OPERATION-MODEL>.
 </LSC6-PARAMETERS-VALUE>
 
 

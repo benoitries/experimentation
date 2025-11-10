@@ -41,7 +41,7 @@ The PlantUML Diagram <PLANTUML-DIAGRAM> must be a solely plantuml block. <PLANTU
 ## Quantitative Rules
 
 <LDR1-SYS-UNIQUE>
-There must be exactly one System lifeline per diagram . Actor Type is System and actor instance name is system. 
+There must be exactly one System lifeline per diagram.
 </LDR1-SYS-UNIQUE>
 
 
