@@ -40,8 +40,7 @@ On success:
         "proposed_change": "Precise, minimal edit to apply",
         "example_before": "concise non-compliant representation",
         "example_after": "concise compliant representation",
-        "rationale": "Why this change satisfies the rule",
-        "risk": "low|medium|high"
+        "rationale": "Why this change satisfies the rule"
       }
     ],
     "coverage": {

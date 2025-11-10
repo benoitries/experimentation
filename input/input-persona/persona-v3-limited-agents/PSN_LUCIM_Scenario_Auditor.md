@@ -38,8 +38,7 @@ Example schema structure:
         "proposed_change": "Precise, minimal edit to apply (PlantUML line change)",
         "example_before": "concise non-compliant PlantUML snippet",
         "example_after": "concise compliant PlantUML snippet",
-        "rationale": "Why this change satisfies the rule",
-        "risk": "low|medium|high"
+        "rationale": "Why this change satisfies the rule"
       }
     ],
     "coverage": {

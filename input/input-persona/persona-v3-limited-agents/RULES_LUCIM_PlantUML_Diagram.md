@@ -113,9 +113,11 @@ The background of an activation bar placed just after an output event must be #2
 
 <LDR17-ACTOR-DECLARATION-SYNTAX>
 Each actor must be declared using this PlantUML syntax:
-participant "anActorName:ActActorType" as anActorName
+participant "actorInstanceName:ActActorType" as actorInstanceName
 Example 1: participant "theCreator:ActMsrCreator" as theCreator
 Example 2: participant "chris:ActEcologist" as chris
+where ActActorType must be a valid actor type as defined in the <LUCIM-SCENARIO>,
+and actorInstanceName must be a valid actor instance name as defined in the <LUCIM-SCENARIO>.
 </LDR17-ACTOR-DECLARATION-SYNTAX>
 
 
@@ -178,7 +180,7 @@ Example: actAdministrator, chris, theClock, anEcologist.
 </LDR27-ACTOR-INSTANCE-FORMAT>
 
 <LDR28-ACTOR-INSTANCE-NAME-CONSISTENCY>
-All actor instance names must be consistent with the actor type names defined in <LUCIM-OPERATION-MODEL> and <LUCIM-SCENARIO>.
+All actor instance names must be consistent with the actor type names defined in <LUCIM-SCENARIO>.
 Example: actAdministrator for an ActAdministrator type, chris for an ActEcologist type, joe for an ActUser type, theClock for an ActClock type, anEcologist for an ActEcologist type.
 </LDR28-ACTOR-INSTANCE-NAME-CONSISTENCY>
 
