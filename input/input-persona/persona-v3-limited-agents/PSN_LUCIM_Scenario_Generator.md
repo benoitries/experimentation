@@ -114,10 +114,10 @@ Example schema structure:
         "description": "scenario_description",
         "messages": [
           {
-            "source": "actorInstanceName:ActActorType|System",
-            "target": "actorInstanceName:ActActorType|System",
-            "event_type": "inputEvent|outputEvent",
-            "event_name": "inputEventName|outputEventName",
+            "source": "actorInstanceName:ActActorType" | "System",
+            "target": "actorInstanceName:ActActorType" | "System",
+            "event_type": "inputEvent" | "outputEvent",
+            "event_name": "inputEventName" | "outputEventName",
             "parameters": "concrete_parameter_values"
           }
         ]
@@ -125,9 +125,11 @@ Example schema structure:
   },
   "errors": null
 }
-where ActActorType must be a valid actor type as defined in the <LUCIM-OPERATION-MODEL>,
+where source and target can be either an actor instance name with an actor type or "System",
+and event_type can be either "an "inputEvent" or "outputEvent",
+and inputEventName and outputEventName must be a valid input event name and output event name as defined in the <LUCIM-OPERATION-MODEL>,
+and ActActorType must be a valid actor type as defined in the <LUCIM-OPERATION-MODEL>,
 and actor_instance_name is an instance name of the actor compliant with the <RULES-LUCIM-SCENARIO>
-and inputEventName and outputEventName must be a valid input event name and output event name as defined in the <LUCIM-OPERATION-MODEL>.
 
 
 **Error Handling**
